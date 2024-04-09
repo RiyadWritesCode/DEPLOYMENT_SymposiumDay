@@ -1,0 +1,16 @@
+.dashboardView {
+  background-color: #eff7fb;
+  border-radius: 8px;
+  box-shadow: 0 10px 5px 0 rgba(0, 0, 0, 0.2); /* x-offset, y-offset, blur-radius, spread-radius, color */
+  padding: 16px 24px;
+  color: #333;
+}
+.dashboardView h3 {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.dashboardView p {
+  font-size: 24px;
+  margin-bottom: 12px;
+}

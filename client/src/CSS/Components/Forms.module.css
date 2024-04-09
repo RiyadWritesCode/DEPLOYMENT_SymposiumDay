@@ -1,0 +1,494 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+/* TEXT */
+.h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* RADIOS */
+
+.radioGroup {
+  display: flex;
+  gap: 0px;
+  margin: 10px auto 12px;
+}
+
+.radioLabel {
+  padding: 12px;
+  border: 1px solid #d3cdd7;
+  background-color: #fbfffe;
+  color: #1b1b1e;
+  width: 100%;
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+  border-radius: 5px;
+  font-family: "Roboto", sans-serif;
+}
+
+.radioLabel:hover {
+  background-color: #23be82;
+  color: #fbfffe;
+}
+
+.radioInput {
+  display: none; /* Hide the default radio input */
+}
+
+.radioInput:checked + .radioLabel {
+  background-color: #1ea270;
+  color: #fbfffe;
+  font-weight: bold;
+}
+
+/* ATTENDANCE RADIO */
+.attendanceRadioGroup {
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.presentRadioLabel {
+  padding: 4px 12px;
+  background: #fbfffe;
+  color: #1ea270;
+  border: 2px solid #1ea270;
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+  border-radius: 5px;
+  font-family: "Roboto", sans-serif;
+}
+
+.presentRadioLabel:hover {
+  background-color: #1ea270;
+  color: #fbfffe;
+}
+
+.absentRadioLabel {
+  padding: 4px 12px;
+  background: #fbfffe;
+  color: #f04e4f;
+  border: 2px solid #f04e4f;
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+  border-radius: 5px;
+  font-family: "Roboto", sans-serif;
+}
+
+.absentRadioLabel:hover {
+  background-color: #f04e4f;
+  color: #fbfffe;
+}
+
+.presentRadioInput,
+.absentRadioInput {
+  display: none; /* Hide the default radio input */
+}
+
+.presentRadioInput:checked + .presentRadioLabel {
+  background-color: #1ea270;
+  color: #fbfffe;
+  font-weight: bold;
+}
+
+.absentRadioInput:checked + .absentRadioLabel {
+  background-color: #f04e4f;
+  color: #fbfffe;
+  font-weight: bold;
+}
+
+/* TEXT INPUTS */
+.textInput {
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  width: 100%;
+  display: block;
+  border-radius: 5px;
+  box-sizing: border-box;
+  border: 1px solid #d3cdd7;
+  font-size: 16px;
+  font-family: "Roboto", sans-serif;
+}
+
+.textInput:focus {
+  border: 2px solid #5d5e60;
+  outline: none;
+}
+
+/* INPUT LABELS */
+
+.inputLabel {
+  display: block;
+  font-size: 20px;
+}
+
+.inputLabelInline {
+  display: inline;
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+/* TEXT AREA INPUT */
+.textareaInput {
+  width: 100%;
+  display: block;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  border: 1px solid #d7d8d8;
+  font-size: 16px;
+  font-family: "Roboto", sans-serif;
+}
+
+.textareaInputChars {
+  position: absolute;
+  bottom: 12px;
+  right: 10px; /* adjust as needed */
+  margin: 0;
+  font-size: 16px; /* adjust as needed */
+  color: #d3cdd7; /* Icon color, can be adjusted as needed */
+  padding: 0 5px;
+  border-radius: 5px;
+}
+
+/* TEXT INPUTS WITH ICONS*/
+
+.textInputGroup {
+  position: relative;
+}
+
+.textInputWithIcon {
+  padding-right: 40px;
+}
+
+.textInputIcon {
+  position: absolute;
+  right: 10px;
+  top: 55%;
+  transform: translateY(-50%);
+  cursor: pointer; /* Indicates the icon is clickable */
+  color: #d3cdd7; /* Icon color, can be adjusted as needed */
+}
+
+/* TEXT INPUTS WITH CHAR LEFT */
+
+.textInputChars {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer; /* Indicates the icon is clickable */
+  color: #d3cdd7; /* Icon color, can be adjusted as needed */
+}
+
+.textInputError + .textInputChars {
+  color: #f04e4f;
+}
+
+.textInputError {
+  border: 1px solid #f04e4f;
+}
+
+/* Adjust the border color when the input field is focused */
+.textInputError:focus {
+  border: 2px solid #f04e4f;
+  outline: none;
+}
+
+/* SEARCH INPUT */
+.defaultCursor:hover {
+  cursor: default;
+}
+
+/* SELECT INPUTS */
+.selectInput {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 16px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  border: 1px solid #d3cdd7;
+  font-size: 16px;
+  font-family: "Roboto", sans-serif;
+}
+
+.selectInput:focus {
+  border: 2px solid #5d5e60;
+  outline: none;
+}
+
+/* BUTTONS */
+
+.button {
+  background-color: #1ea270;
+  color: #fbfffe;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 900;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.5s;
+}
+
+.button:hover {
+  background-color: #198a5f;
+  cursor: pointer;
+}
+
+.smallButton {
+  background-color: #1ea270;
+  color: #fbfffe;
+  border: none;
+  padding: 10px;
+  font-size: 15px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.smallButton:hover {
+  background-color: #198a5f;
+  cursor: pointer;
+}
+
+.ghostButton {
+  position: absolute;
+  top: 0px;
+  right: 15px; /* Position the delete icon to the top right corner of the studentHeader */
+
+  padding: 6px 15px;
+  border-radius: 4px;
+  font-family: "Roboto", sans-serif;
+  font-size: 20px;
+  /* align-self is no longer needed because we're using absolute positioning */
+}
+
+.ghostButtonNormal {
+  position: static;
+}
+
+.ghostButtonSmall {
+  padding: 4px 12px;
+  font-size: 18px;
+}
+
+.ghostButtonGreen {
+  background: #fbfffe;
+  color: #1ea270;
+  border: 2px solid #1ea270;
+}
+.ghostButtonGreen:hover {
+  background: #198a5f;
+  color: #fbfffe;
+  cursor: pointer;
+}
+
+.ghostButtonRed {
+  background: #fbfffe;
+  color: #f04e4f;
+  border: 2px solid #f04e4f;
+}
+.ghostButtonRed:hover {
+  background: #f04e4f;
+  color: #fbfffe;
+  cursor: pointer;
+}
+
+.ghostButtonOrange {
+  background: #fbfffe;
+  color: #ea9010;
+  border: 2px solid #ea9010;
+}
+
+/* DELETE BUTTON */
+.deleteIcon {
+  position: absolute;
+  top: 0;
+  right: 12px; /* Position the delete icon to the top right corner of the studentHeader */
+  cursor: pointer;
+  background: #fbb7ae;
+  padding: 6px 6px 3px 6px;
+  border-radius: 50%;
+  color: #f04e4f;
+  border: none;
+  /* align-self is no longer needed because we're using absolute positioning */
+}
+
+.deleteIcon:hover {
+  background: #ef9184;
+}
+
+/* DATE INPUT */
+.dateInput {
+  background-color: #fbfffe;
+  color: #1b1b1e;
+  padding-left: 12px;
+  margin: 2px 0 14px;
+  font-size: 18px;
+  border: 1px solid #d3cdd7;
+  outline: none;
+  border-radius: 5px;
+  color-scheme: dark;
+}
+::-webkit-calendar-picker-indicator {
+  background-color: #1ea270;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* FILE INPUT */
+.fileInputGroup {
+  margin-top: 16px;
+}
+
+.fileInput {
+  display: block;
+  color: #1b1b1e;
+  background: #fbfffe;
+  border-radius: 5px;
+  border: 1px solid #d3cdd7;
+  font-size: 16px;
+  margin: 4px 0 12px;
+  width: 100%;
+}
+
+.fileInput::file-selector-button {
+  margin-right: 20px;
+  border: none;
+  background: #1ea270;
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: #fbfffe;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.fileInput::file-selector-button:hover {
+  background: #198a5f;
+}
+
+/* FILE INPUT HELP */
+
+.fileInputHelp {
+  font-size: 18px;
+  margin: 14px 0 8px;
+  text-decoration: underline;
+  color: #5d5e60;
+  transition: color 0.25s;
+}
+
+.fileInputHelp:hover {
+  cursor: pointer;
+  color: #1b1b1e;
+}
+
+.fileInputText {
+  font-size: 18px;
+}
+.fileInputText ul,
+.fileInputText ol {
+  margin: 8px 0 10px;
+}
+
+.fileInputText li {
+  margin: 2px 26px 2px;
+}
+
+.fileInputText li li {
+  margin: 2px 26px 2px;
+}
+
+/* SPINNER */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3); /* Light grey border */
+  border-top: 4px solid #1ea270; /* Blue border */
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  animation: spin 1s linear infinite;
+  margin-left: 11px;
+  margin-right: 11px;
+}
+
+.redSpinner {
+  border: 4px solid rgba(255, 255, 255, 0.3); /* Light grey border */
+  border-top: 4px solid #f04e4f; /* Blue border */
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  animation: spin 0.5s linear infinite;
+  margin-left: 11px;
+  margin-right: 11px;
+}
+
+.smallRedSpinner {
+  border: 4px solid rgba(255, 255, 255, 0.3); /* Light grey border */
+  border-top: 4px solid #f04e4f; /* Blue border */
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  animation: spin 0.5s linear infinite;
+  margin-bottom: 3px;
+}
+
+.bigSpinner {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 20px solid rgba(255, 255, 255, 0.3); /* Light grey border */
+  border-top: 20px solid #1ea270; /* Blue border */
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  animation: spin 1s linear infinite;
+}
+
+/* ERROR */
+
+div.error {
+  padding: 10px;
+  background: #ffefef;
+  border: 1px solid #f04e4f;
+  color: #f04e4f;
+  border-radius: 4px;
+  margin: 20px 0 0;
+}
+
+/* HORIZONTAL BREAK */
+.formBreak {
+  border: none;
+  border-bottom: dotted #d3cdd7;
+  border-width: 5px;
+  margin: 26px auto 20px;
+  width: 10%;
+}

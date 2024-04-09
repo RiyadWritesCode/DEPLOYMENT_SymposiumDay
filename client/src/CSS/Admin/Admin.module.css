@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap");
+
+.admin .container {
+  display: flex;
+  padding: 20px 24px;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.leftMenu {
+  width: 20%;
+}
+
+.rightMenu {
+  width: 80%;
+}
+
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .leftMenu,
+  .rightMenu {
+    width: 100%; /* Both elements take full width */
+  }
+}

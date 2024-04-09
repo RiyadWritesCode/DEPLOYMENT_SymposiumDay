@@ -1,0 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap");
+
+.presenter .container {
+  display: flex;
+  padding: 20px 24px;
+  gap: 24px;
+  align-items: flex-start; /* Add this line if the container is causing the issue */
+}
+
+.leftMenu {
+  width: 20%;
+}
+
+.rightMenu {
+  width: 80%;
+  /* background-color: #eff7fb; */
+}
+
+@media (max-width: 1200px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .leftMenu,
+  .rightMenu {
+    width: 100%; /* Both elements take full width */
+  }
+}
+
+/* LEFT SIDEBAR */
+.topSidebar {
+  margin-bottom: 24px;
+  padding: 3px;
+}
+
+.bottomSidebar {
+  padding: 15px 5px;
+}
+
+.bottomSidebar p {
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+}

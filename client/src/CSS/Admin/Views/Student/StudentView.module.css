@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap");
+
+.container {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start; /* Add this line if the container is causing the issue */
+}
+
+.leftStudentView,
+.rightStudentView {
+  padding: 16px 24px;
+  width: 50%;
+}
+
+@media (max-width: 750px) {
+  .container {
+    flex-direction: column;
+  }
+  .rightStudentView {
+    order: -1; /* This will place rightStudentView on top */
+  }
+
+  .leftStudentView,
+  .rightStudentView {
+    width: 100%; /* Both elements take full width */
+  }
+}
+
+/* STUDENT LIST */
+.studentName {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  display: block;
+  cursor: pointer;
+  color: #1b1b1e;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.student {
+  margin: 0 auto 20px;
+  border-left: 3px solid #ea9010;
+  padding: 5px 0 5px 16px;
+}
+
+.student p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.studentHeader {
+  position: relative; /* This will be the positioning context for the absolute delete icon */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 30px;
+}

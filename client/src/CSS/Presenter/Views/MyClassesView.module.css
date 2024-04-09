@@ -1,0 +1,97 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap");
+
+/* HEADERS */
+
+.classHeader h3 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.headerContainer p {
+  font-size: 18px;
+  margin-top: -15px;
+}
+
+/* VIEW CONTAINERS */
+
+.container {
+  gap: 24px;
+  font-family: "Roboto", sans-serif;
+  padding: 16px 24px;
+}
+
+/* BLOCK HEADER AND NOT ENROLLED TEXT */
+.notEnrolled {
+  margin-top: -8px;
+  margin-bottom: 24px;
+  font-size: 18px;
+  color: #d22d16;
+}
+/* ALL CLASSES */
+
+.class {
+  margin-left: 4px;
+  border-left: 3px solid #ea9010;
+  padding: 10px 24px 10px 16px;
+}
+
+.class p {
+  margin: 5px 0;
+  font-size: 18px;
+  overflow-wrap: break-word;
+}
+
+.classHeader {
+  position: relative; /* This will be the positioning context for the absolute delete icon */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 30px;
+}
+
+.classColor {
+  color: #f04e4f;
+}
+
+/* FILTER */
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (max-width: 500px) {
+  .headerContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .headerContainer p {
+    margin: -4px 0 0;
+  }
+}
+
+/* STUDENT LIST */
+
+.class ul {
+  padding-left: 20px;
+}
+
+.class ul li {
+  list-style-type: disc;
+  font-size: 17px;
+  margin: 8px 0;
+}
+
+.studentNameContainer {
+  display: flex;
+  align-items: center;
+  width: 350px; /* Ensure the container takes full width */
+  justify-content: space-between;
+}
+
+.studentInfo {
+  /* No flex-grow here to avoid pushing radio buttons too far */
+  margin-right: 16px; /* Or adjust as needed for optimal spacing */
+}

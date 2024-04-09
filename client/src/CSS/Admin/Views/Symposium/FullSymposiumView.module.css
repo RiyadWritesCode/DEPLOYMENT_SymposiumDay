@@ -1,0 +1,208 @@
+.container {
+  padding: 20px 24px;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 8px;
+  margin-bottom: 20px;
+}
+
+/* HEADINGS */
+.h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 28px;
+}
+
+.h3 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+/* OVERVIEW */
+.overview {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start; /* Add this line if the container is causing the issue */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.leftOverview,
+.middleOverview,
+.rightOverview {
+  padding: 16px 24px;
+  width: 33%;
+  align-self: stretch;
+}
+
+.leftOverview ul,
+.middleOverview ul,
+.rightOverview ul {
+  list-style-type: none;
+}
+
+.leftOverview li,
+.middleOverview li,
+.rightOverview li {
+  font-size: 18px;
+  margin: 4px auto 4px;
+}
+
+@media (max-width: 1100px) {
+  .overview {
+    flex-direction: column;
+    order: -1;
+  }
+
+  .leftOverview,
+  .middleOverview,
+  .rightOverview {
+    width: 100%;
+  }
+}
+
+/* Classes */
+.classes {
+  padding: 16px 24px;
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.classes h2 {
+  margin-bottom: 12px;
+}
+
+.class {
+  text-align: left;
+  margin-left: 4px;
+  border-left: 3px solid #ea9010;
+  padding: 10px 24px 10px 16px;
+}
+
+.className {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 700;
+  text-decoration: underline;
+  color: #1b1b1e;
+}
+
+.class p {
+  margin: 5px 0;
+  font-size: 18px;
+  overflow-wrap: break-word;
+}
+
+.classHeader {
+  position: relative; /* This will be the positioning context for the absolute delete icon */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 30px;
+}
+
+.classColor {
+  color: #f04e4f;
+}
+
+/* FUNCTIONS */
+
+.functions {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start; /* Add this line if the container is causing the issue */
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.leftFunctions,
+.middleFunctions,
+.rightFunctions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 24px;
+  width: 33%;
+  align-self: stretch;
+}
+
+@media (max-width: 1100px) {
+  .functions {
+    flex-direction: column;
+    order: -1;
+  }
+
+  .leftFunctions,
+  .middleFunctions,
+  .rightFunctions {
+    width: 100%;
+  }
+}
+
+/* SETUP */
+
+.setup {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start; /* Add this line if the container is causing the issue */
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.leftSetup,
+.middleSetup,
+.rightSetup {
+  padding: 16px 24px;
+  width: 33%;
+  /* align-self: stretch; */
+}
+
+@media (max-width: 1100px) {
+  .setup {
+    flex-direction: column;
+    order: -1;
+  }
+
+  .leftSetup,
+  .middleSetup,
+  .rightSetup {
+    width: 100%;
+  }
+}
+
+/* USER LIST */
+
+.userName {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  display: block;
+  cursor: pointer;
+  color: #1b1b1e;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.user {
+  margin: 0 auto 20px;
+  border-left: 3px solid #ea9010;
+  padding: 5px 0 5px 16px;
+}
+
+.user p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.userHeader {
+  position: relative; /* This will be the positioning context for the absolute delete icon */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 30px;
+}
