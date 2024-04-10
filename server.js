@@ -8,6 +8,8 @@ const mongoose = require("mongoose");
 // HTTP request logger middleware for nodejs
 const morgan = require("morgan");
 const chalk = require("chalk");
+const rfs = require("rotating-file-stream");
+const fs = require("fs");
 
 const { requireRoleAuth } = require("./middleware/requireRoleAuth");
 
@@ -42,7 +44,20 @@ const morganMiddleware = morgan(function (tokens, req, res) {
   ].join(" ");
 });
 
+// Logging to disk
+const logDirectory = path.join(__dirname, "log");
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+
+// Create a rotating write stream
+const accessLogStream = rfs.createStream("access.log", {
+  interval: "1d", // rotate daily
+  path: logDirectory,
+});
+
+// Write to render logs
 app.use(morganMiddleware);
+// Morgan setup to write to file/render disk
+app.use(morgan("combined", { stream: accessLogStream }));
 
 // Login Route
 const { loginUser } = require("./controllers/userController");
