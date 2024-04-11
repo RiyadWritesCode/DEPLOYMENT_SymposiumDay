@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { generate } from "random-words";
 import { Link } from "react-router-dom";
 import { FixedSizeList as List } from "react-window";
-import * as XLSX from "xlsx/xlsx.js";
+import * as XLSX from "xlsx/xlsx";
 
 const StudentView = () => {
   const { user } = useAuthContext();

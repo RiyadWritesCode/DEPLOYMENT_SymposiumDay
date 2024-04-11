@@ -8,7 +8,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { FixedSizeList as FixedSizeList } from "react-window";
 import { VariableSizeList as VariableSizeList } from "react-window";
 
-import * as XLSX from "xlsx/xlsx.js";
+import * as XLSX from "xlsx/xlsx";
 
 import Navbar from "../../../../components/Navbar.js";
 

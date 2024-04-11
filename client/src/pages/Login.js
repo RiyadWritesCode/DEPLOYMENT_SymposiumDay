@@ -40,6 +40,7 @@ const Login = () => {
 
   return (
     <div className={styles.login}>
+      <Navbar />
       <div className={styles.container}>
         <form className={styles.loginForm} onSubmit={handleSubmit}>
           <div className={styles.userIconContainer}>
