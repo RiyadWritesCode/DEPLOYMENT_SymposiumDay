@@ -284,14 +284,25 @@ symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
     const symposium = await this.findById(symposium_id).session(session);
 
     if (!symposium) throw new Error("Symposium not found");
-    if (!symposium.permissions.studentsJoiningClasses)
-      throw new Error("Joining classes is currently locked by admin.");
+    if (
+      symposium.permissions.studentsJoiningClasses ||
+      symposium.permissions.studentsLeavingClasses
+    ) {
+      throw new Error(
+        "To fill all available spaces, teporarily disable students from joining or leaving classes."
+      );
+    }
 
     // Retrieve detailed class information including students for each class in the symposium
     const classes = await mongoose
       .model("Class")
       .find({ _id: { $in: symposium.classes } })
       .session(session);
+
+    // Sort classes by the number of students descending
+    classes = classes.sort(
+      (a, b) => b.students.length / b.maxStudents - a.students.length / a.maxStudents
+    );
 
     // Fetch all students part of the symposium
     const allStudents = await mongoose
