@@ -143,8 +143,8 @@ userSchema.statics.createUser = async function (
         <h2>How to use SymposiumDay.com?</h2>
         ${
           user.userType === "student"
-            ? "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>"
-            : "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a presenter watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>"
+            ? "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://www.youtube.com/watch?v=EOwiGTCKpaI' target='_blank'>youtube video</a>.</p>"
+            : "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a presenter watch this <a href='https://www.youtube.com/watch?v=8wXBCJ7rPnU' target='_blank'>youtube video</a>.</p>"
         }
         <h2>Other Questions?</h2>
         <p>If you have any other questions, suggestions, or issues with <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> feel free to message Riyad Rzayev on teams or email riyad.rzayev@ris.ae.</p>
@@ -254,8 +254,8 @@ userSchema.statics.createUsers = async function (users, userType) {
             <h2>How to use SymposiumDay.com?</h2>
             ${
               user.userType === "student"
-                ? "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>"
-                : "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a presenter watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>"
+                ? "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://www.youtube.com/watch?v=EOwiGTCKpaI' target='_blank'>youtube video</a>.</p>"
+                : "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a presenter watch this <a href='https://www.youtube.com/watch?v=8wXBCJ7rPnU' target='_blank'>youtube video</a>.</p>"
             }
             <h2>Other Questions?</h2>
             <p>If you have any other questions, suggestions, or issues with <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> feel free to message Riyad Rzayev on teams or email riyad.rzayev@ris.ae.</p>
