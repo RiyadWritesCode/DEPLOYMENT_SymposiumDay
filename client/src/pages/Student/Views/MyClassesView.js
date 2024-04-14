@@ -17,18 +17,25 @@ const MyClassesView = ({ filterBlock }) => {
     setSymposiumFilter(event.target.value);
   };
 
-  // Filtered list based on search query, selected block, and symposium filter
-  const filteredClasses = myClasses.filter((c) => {
-    const matchesBlockFilter = !filterBlock || c.block === filterBlock;
-    const matchesSymposiumFilter = c.symposium_id === symposiumFilter;
-    return matchesBlockFilter && matchesSymposiumFilter;
-  });
+  // Commenting out the filtered list based on search query, selected block, and symposium filter
+  // const filteredClasses = myClasses.filter((c) => {
+  //   const matchesBlockFilter = !filterBlock || c.block === filterBlock;
+  //   const matchesSymposiumFilter = c.symposium_id === symposiumFilter;
+  //   return matchesBlockFilter && matchesSymposiumFilter;
+  // });
 
-  const blocksToShow = filterBlock
-    ? [parseInt(filterBlock)]
-    : Array.from({ length: 6 }, (_, i) => i + 1);
+  // const blocksToShow = filterBlock
+  //   ? [parseInt(filterBlock)]
+  //   : Array.from({ length: 6 }, (_, i) => i + 1);
 
-  const classesByBlock = blocksToShow.map((blockNumber) => {
+  // const classesByBlock = blocksToShow.map((blockNumber) => {
+  //   return {
+  //     blockNumber,
+  //     class: myClasses.find((c) => c.block === blockNumber) || null,
+  //   };
+  // });
+
+  const classesByBlock = Array.from({ length: 6 }, (_, i) => i + 1).map((blockNumber) => {
     return {
       blockNumber,
       class: myClasses.find((c) => c.block === blockNumber) || null,
@@ -79,10 +86,12 @@ const MyClassesView = ({ filterBlock }) => {
     <div className={`${styles.container} ${sidebar.box}`}>
       <div className={styles.headerContainer}>
         <h2 className={forms.h2}>
-          All Classes ({isFetching ? "Loading..." : filteredClasses.length}):
+          All Classes ({isFetching ? "Loading..." : myClasses.length}):{" "}
+          {/* Changed from filteredClasses to myClasses */}
         </h2>
-        {filterBlock && <p>Filtering by Block #{filterBlock}</p>}
-        {!filterBlock && <p>Not Filtering</p>}
+        <p>Cannot filter in MyClasses page.</p>
+        {/* {filterBlock && <p>Filtering by Block #{filterBlock}</p>} */}
+        {/* {!filterBlock && <p>Not Filtering</p>} */}
       </div>
       <select
         value={symposiumFilter || ""}
