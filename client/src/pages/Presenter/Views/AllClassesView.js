@@ -3,10 +3,12 @@ import sidebar from "../../../CSS/Components/Sidebar.module.css";
 import styles from "../../../CSS/Presenter/Views/AllClassesView.module.css";
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
+import { useLogout } from "../../../hooks/useLogout";
 import { VariableSizeList as List } from "react-window";
 
 const AllClassesView = ({ filterBlock }) => {
   const { user } = useAuthContext();
+  const { logout } = useLogout();
   const [symposiums, setSymposiums] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
 
@@ -218,8 +220,12 @@ const AllClassesView = ({ filterBlock }) => {
         setSymposiums(json);
         setIsFetching(false);
       }
+      if (response.status === 401) {
+        logout();
+      }
     };
     fetchSymposiums();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {

@@ -2,10 +2,12 @@ import forms from "../../../CSS/Components/Forms.module.css";
 import sidebar from "../../../CSS/Components/Sidebar.module.css";
 import styles from "../../../CSS/Student/Views/MyClassesView.module.css";
 import { useAuthContext } from "../../../hooks/useAuthContext";
+import { useLogout } from "../../../hooks/useLogout";
 import { useState, useEffect } from "react";
 
 const MyClassesView = ({ filterBlock }) => {
   const { user } = useAuthContext();
+  const { logout } = useLogout();
 
   const [symposiums, setSymposiums] = useState([]);
   const [myClasses, setMyClasses] = useState([]);
@@ -78,8 +80,12 @@ const MyClassesView = ({ filterBlock }) => {
         setMyClasses(json);
         setIsFetching(false);
       }
+      if (response.status === 401) {
+        logout();
+      }
     };
     fetchClasses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symposiumFilter, user._id, user.token]);
 
   return (
