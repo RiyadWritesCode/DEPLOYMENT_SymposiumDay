@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, NavLink } from "react-router-dom";
+import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 
 import { useState } from "react";
 import sidebar from "../../CSS/Components/Sidebar.module.css";
@@ -99,6 +99,7 @@ const Presenter = () => {
           <Routes>
             <Route path="all-classes" element={<AllClassesView filterBlock={filterBlock} />} />
             <Route path="my-classes" element={<MyClassesView filterBlock={filterBlock} />} />
+            <Route path="*" element={<Navigate to="/all-classes" />} />
           </Routes>
         </div>
       </div>

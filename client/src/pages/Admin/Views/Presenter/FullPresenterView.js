@@ -2,7 +2,6 @@ import forms from "../../../../CSS/Components/Forms.module.css";
 import sidebar from "../../../../CSS/Components/Sidebar.module.css";
 import styles from "../../../../CSS/Admin/Views/Presenter/FullPresenterView.module.css";
 import { useAuthContext } from "../../../../hooks/useAuthContext.js";
-import { useLogout } from "../../../../hooks/useLogout.js";
 import { useState, useEffect } from "react";
 import { generate } from "random-words";
 import { useParams } from "react-router-dom";
@@ -12,7 +11,6 @@ import Navbar from "../../../../components/Navbar.js";
 const FullPresenterView = () => {
   const { id } = useParams();
   const { user } = useAuthContext();
-  const { logout } = useLogout();
 
   const [isFetching, setIsFetching] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,9 +102,6 @@ const FullPresenterView = () => {
       }
       if (!response.ok) {
         setError(json.error);
-      }
-      if (response.status === 401) {
-        logout();
       }
     };
     fetchUsers();

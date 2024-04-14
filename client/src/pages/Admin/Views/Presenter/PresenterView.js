@@ -2,7 +2,6 @@ import forms from "../../../../CSS/Components/Forms.module.css";
 import sidebar from "../../../../CSS/Components/Sidebar.module.css";
 import styles from "../../../../CSS/Admin/Views/Presenter/PresenterView.module.css";
 import { useAuthContext } from "../../../../hooks/useAuthContext.js";
-import { useLogout } from "../../../../hooks/useLogout.js";
 import { useState, useEffect } from "react";
 import { generate } from "random-words";
 import { Link } from "react-router-dom";
@@ -11,7 +10,6 @@ import * as XLSX from "xlsx/xlsx";
 
 const PresenterView = () => {
   const { user } = useAuthContext();
-  const { logout } = useLogout();
   const [users, setUsers] = useState([]);
 
   const [isFetching, setIsFetching] = useState(true);
@@ -308,9 +306,6 @@ const PresenterView = () => {
         setUsers(json);
         setIsFetching(false);
         setIsLoading(false);
-      }
-      if (response.status === 401) {
-        logout();
       }
     };
     fetchUsers();

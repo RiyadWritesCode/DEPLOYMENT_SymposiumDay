@@ -2,7 +2,6 @@ import forms from "../../../../CSS/Components/Forms.module.css";
 import sidebar from "../../../../CSS/Components/Sidebar.module.css";
 import styles from "../../../../CSS/Admin/Views/Student/FullStudentView.module.css";
 import { useAuthContext } from "../../../../hooks/useAuthContext.js";
-import { useLogout } from "../../../../hooks/useLogout.js";
 import { useState, useEffect } from "react";
 import { generate } from "random-words";
 import { useParams } from "react-router-dom";
@@ -12,7 +11,6 @@ import Navbar from "../../../../components/Navbar.js";
 const FullStudentView = () => {
   const { id } = useParams();
   const { user } = useAuthContext();
-  const { logout } = useLogout();
 
   const gradeOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
@@ -127,9 +125,6 @@ const FullStudentView = () => {
       }
       if (!response.ok) {
         setError(json.error);
-      }
-      if (response.status === 401) {
-        logout();
       }
     };
     fetchUsers();

@@ -97,6 +97,7 @@ const Student = () => {
           <Routes>
             <Route path="all-classes" element={<AllClassesView filterBlock={filterBlock} />} />
             <Route path="my-classes" element={<MyClassesView filterBlock={filterBlock} />} />
+            <Route path="*" element={<Navigate to="/all-classes" />} />
           </Routes>
         </div>
       </div>

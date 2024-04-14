@@ -1,7 +1,3 @@
-import Student from "./Student/Student";
-import Presenter from "./Presenter/Presenter";
-import Admin from "./Admin/Admin";
-import Login from "./Login";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";

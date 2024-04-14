@@ -53,7 +53,7 @@ const Admin = () => {
             <Route path="presenters" element={<PresenterView />} />
             <Route path="symposiums" element={<SymposiumView />} />
             {/* Add more nested routes as needed */}
-            <Route path="*" element={<Navigate to="." />} />
+            <Route path="*" element={<Navigate to="/students" />} />
           </Routes>
         </div>
       </div>

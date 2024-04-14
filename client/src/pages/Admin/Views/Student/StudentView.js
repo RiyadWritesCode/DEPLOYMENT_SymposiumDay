@@ -2,7 +2,6 @@ import forms from "../../../../CSS/Components/Forms.module.css";
 import sidebar from "../../../../CSS/Components/Sidebar.module.css";
 import styles from "../../../../CSS/Admin/Views/Student/StudentView.module.css";
 import { useAuthContext } from "../../../../hooks/useAuthContext.js";
-import { useLogout } from "../../../../hooks/useLogout.js";
 import { useState, useEffect } from "react";
 import { generate } from "random-words";
 import { Link } from "react-router-dom";
@@ -11,7 +10,6 @@ import * as XLSX from "xlsx/xlsx";
 
 const StudentView = () => {
   const { user } = useAuthContext();
-  const { logout } = useLogout();
   const [users, setUsers] = useState([]);
 
   const gradeOptions = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -358,9 +356,6 @@ const StudentView = () => {
       if (response.ok) {
         setUsers(json);
         setIsFetching(false);
-      }
-      if (response.status === 401) {
-        logout();
       }
     };
     fetchUsers();
