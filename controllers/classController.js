@@ -50,13 +50,13 @@ const joinClass = async (req, res) => {
     symposium_id: thisClass.symposium_id,
   }).lean();
 
-  if (
-    classesInSameBlock.some((classInBlock) =>
-      classInBlock.students.some((st) => st.student_id.toString() === student._id.toString())
-    )
-  ) {
+  classInSameBlock = classesInSameBlock.some((classInBlock) =>
+    classInBlock.students.some((st) => st.student_id.toString() === student._id.toString())
+  );
+
+  if (classInSameBlock) {
     return res.status(400).json({
-      error: `You are already in another class during block #${thisClass.block}. Leave the other class named '${classesInSameBlock[0].name}' to join this one.`,
+      error: `You are already in another class during block #${thisClass.block}. Leave the other class named '${classInSameBlock.name}' to join this one.`,
     });
   }
 
