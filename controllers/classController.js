@@ -366,6 +366,7 @@ const createClass = async (req, res) => {
         ...classInstance.toObject(), // convert mongoose document to a plain JavaScript object
         presenterFirstName: presenter.firstName,
         presenterLastName: presenter.lastName,
+        presenter_id: { _id: presenter._id },
       };
     });
 

@@ -196,6 +196,7 @@ const AllClassesView = ({ filterBlock }) => {
         setBlocks([]);
         setShortDescription("");
         setSymposium("");
+        setSymposiumIdForFetch("");
         setGender("all");
       }
       setIsLoading(false);
@@ -234,6 +235,9 @@ const AllClassesView = ({ filterBlock }) => {
       if (response.ok) {
         setSymposium(json);
         setIsFetching(false);
+      }
+      if (!response.ok) {
+        console.log(json.error);
       }
     };
     fetchSymposium();
