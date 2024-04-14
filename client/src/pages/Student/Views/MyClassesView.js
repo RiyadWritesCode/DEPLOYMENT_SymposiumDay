@@ -151,7 +151,6 @@ const MyClassesView = ({ filterBlock }) => {
 
                             const json = await response.json();
                             if (response.ok) {
-                              console.log(json._id);
                               setMyClasses((prevClasses) =>
                                 prevClasses.filter((cls) => cls._id !== json._id)
                               );

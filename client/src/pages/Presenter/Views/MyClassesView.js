@@ -54,7 +54,6 @@ const MyClassesView = ({ filterBlock }) => {
       student_id: studentId,
       attendance: attendance[studentId],
     }));
-    console.log("attendance updates: " + JSON.stringify(attendanceUpdates, null, 2));
 
     const response = await fetch(`/api/presenter/classes/${classId}/update-attendance`, {
       method: "PATCH",

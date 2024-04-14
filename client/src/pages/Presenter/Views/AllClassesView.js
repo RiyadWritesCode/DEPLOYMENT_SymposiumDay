@@ -253,7 +253,6 @@ const AllClassesView = ({ filterBlock }) => {
       if (response.ok) {
         setAllClasses(json);
         setIsFetching(false);
-        console.log(json);
       }
     };
     fetchClasses();
