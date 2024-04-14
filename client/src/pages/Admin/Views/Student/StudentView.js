@@ -530,7 +530,6 @@ const StudentView = () => {
                   </ul>
                 </li>
 
-                <li>Limit of 1000 students at a time</li>
                 <li>All students are new (do not exist in database already)</li>
               </ul>
               <strong>Steps:</strong>

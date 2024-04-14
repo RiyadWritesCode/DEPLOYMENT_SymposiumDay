@@ -440,7 +440,6 @@ const PresenterView = () => {
                     </ul>{" "}
                   </li>
 
-                  <li>Limit of 1000 presenters at a time</li>
                   <li>All presenters are new (do not exist in database already)</li>
                 </ul>
                 <strong>Steps:</strong>
