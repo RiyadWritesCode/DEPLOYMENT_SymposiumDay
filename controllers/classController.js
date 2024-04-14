@@ -347,8 +347,10 @@ const createClass = async (req, res) => {
   const { name, blocks, maxStudents, shortDescription, room, gender, symposium_id } = req.body;
   const presenter_id = req.user._id;
 
+  const presenter = await mongoose.model("User").findById(presenter_id);
+
   try {
-    const classInstances = await Class.createClass(
+    let classInstances = await Class.createClass(
       name,
       blocks,
       maxStudents,
@@ -359,7 +361,13 @@ const createClass = async (req, res) => {
       symposium_id
     );
 
-    res.status(200).json(classInstances);
+    classInstances = classInstances.map((classInstance) => {
+      return {
+        ...classInstance.toObject(), // convert mongoose document to a plain JavaScript object
+        presenterFirstName: presenter.firstName,
+        presenterLastName: presenter.lastName,
+      };
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

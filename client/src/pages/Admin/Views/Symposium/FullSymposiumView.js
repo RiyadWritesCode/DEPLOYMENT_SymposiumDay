@@ -965,7 +965,7 @@ const FullSymposiumView = () => {
             </div>
           </div>
           <VariableSizeList
-            height={filteredClasses.length === 0 ? 100 : 400} // Adjust based on your layout
+            height={filteredClasses.length === 0 ? 100 : 800} // Adjust based on your layout
             width={"100%"} // Adjust based on your layout
             itemCount={filteredClasses.length}
             itemSize={getItemHeight} // Use the dynamic height function
