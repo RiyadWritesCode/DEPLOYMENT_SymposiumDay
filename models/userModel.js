@@ -98,7 +98,7 @@ userSchema.statics.createUser = async function (
     if (grade > 12 || grade < 1) {
       throw Error("Grade must be from 1-12 for students");
     }
-    if (section >= 5) {
+    if (section.length >= 5) {
       throw Error(
         "Class should be less than or equal to 5 characters. If a student is in 10A, their class is just 'A'."
       );

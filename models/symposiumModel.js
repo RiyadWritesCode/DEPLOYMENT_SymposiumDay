@@ -294,7 +294,7 @@ symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
     }
 
     // Retrieve detailed class information including students for each class in the symposium
-    const classes = await mongoose
+    let classes = await mongoose
       .model("Class")
       .find({ _id: { $in: symposium.classes } })
       .session(session);
