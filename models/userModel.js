@@ -140,7 +140,7 @@ userSchema.statics.createUser = async function (
         <h1>Common Questions:</h1>
         <h2>What is this?</h2>
         <p><a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> is a website used by raha school to have days where students can choose what classes they will have.</p>
-        <h2>How to use <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a>?</h2>
+        <h2>How to use SymposiumDay.com?</h2>
         ${
           user.userType === "student"
             ? "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>"
@@ -251,7 +251,7 @@ userSchema.statics.createUsers = async function (users, userType) {
             <h1>Common Questions:</h1>
             <h2>What is this?</h2>
             <p><a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> is a website used by raha school to have days where students can choose what classes they will have.</p>
-            <h2>How to use <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a>?</h2>
+            <h2>How to use SymposiumDay.com?</h2>
             ${
               user.userType === "student"
                 ? "<p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>"

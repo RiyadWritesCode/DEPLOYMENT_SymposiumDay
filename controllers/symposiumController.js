@@ -432,7 +432,7 @@ const sendScheduleToPresenters = async (req, res) => {
             <h1>Common Questions:</h1>
             <h2>What is this?</h2>
             <p><a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> is a website used by raha school to have days where students can choose what classes they will have.</p>
-            <h2>How to use <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a>?</h2>
+            <h2>How to use SymposiumDay.com?</h2>
             <p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a presenter watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>
             <h2>Other Questions?</h2>
             <p>If you have any other questions, suggestions, or issues with <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> feel free to message Riyad Rzayev on teams or email riyad.rzayev@ris.ae.</p>
@@ -485,7 +485,7 @@ const sendScheduleToStudents = async (req, res) => {
             <h1>Common Questions:</h1>
             <h2>What is this?</h2>
             <p><a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> is a website used by raha school to have days where students can choose what classes they will have.</p>
-            <h2>How to use <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a>?</h2>
+            <h2>How to use SymposiumDay.com?</h2>
             <p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://loom.com' target='_blank'>loom video</a>.</p>
             <h2>Other Questions?</h2>
             <p>If you have any other questions, suggestions, or issues with <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> feel free to message Riyad Rzayev on teams or email riyad.rzayev@ris.ae.</p>
