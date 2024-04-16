@@ -69,6 +69,8 @@ userSchema.statics.createUser = async function (
   grade,
   section
 ) {
+  email = email.toLowerCase();
+
   if (!firstName || !lastName || !email || !password || !userType) {
     throw Error("All fields must be filled");
   }
@@ -81,8 +83,6 @@ userSchema.statics.createUser = async function (
   if (checkWhitespace(password)) {
     throw Error("Remove the whitespace in the password field");
   }
-
-  email = email.toLowerCase();
 
   let userObj = {
     firstName,
@@ -177,6 +177,7 @@ userSchema.statics.createUsers = async function (users, userType) {
 
   for (let index = 0; index < users.length; index++) {
     const { firstName, lastName, email, password, gender, grade, section, rowNum } = users[index];
+    email = email.toLowerCase();
 
     if (!firstName || !lastName || !email || !password) {
       throw new Error(`All fields must be filled for user on row ${rowNum}`);
@@ -207,7 +208,6 @@ userSchema.statics.createUsers = async function (users, userType) {
     if (exists) {
       throw Error(`Email is already in use for user on row ${rowNum}`);
     }
-
     let userObj = { firstName, lastName, email, password, userType };
     userObj.password = encrypt(userObj.password);
 
@@ -230,8 +230,6 @@ userSchema.statics.createUsers = async function (users, userType) {
       userObj.grade = grade;
       userObj.section = section;
     }
-
-    email = email.toLowerCase();
 
     userObjects.push(userObj);
   }
