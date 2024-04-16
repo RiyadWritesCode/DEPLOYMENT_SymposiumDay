@@ -171,11 +171,12 @@ const SymposiumView = () => {
         setSymposiums(json);
         setIsFetching(false);
       }
-      if (!response.ok) {
+      if (response.status === 401) {
         logout();
       }
     };
     fetchSymposiums();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (
