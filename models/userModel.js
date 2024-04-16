@@ -26,6 +26,7 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
+      trim: true,
     },
     userType: {
       type: String,
@@ -36,6 +37,7 @@ const userSchema = new Schema(
       type: String,
       required: false,
       enum: ["male", "female"],
+      trim: true,
     },
     grade: {
       type: Number,
@@ -217,7 +219,7 @@ userSchema.statics.createUsers = async function (users, userType) {
       if (grade > 12 || grade < 1) {
         throw Error(`Grade must be from 1-12 for students for student on row ${rowNum}`);
       }
-      if (section > 5) {
+      if (section.length > 5) {
         throw Error(
           "Class should be less than or equal to 5 characters. If a student is in 10A, their class is just 'A'."
         );
