@@ -82,6 +82,8 @@ userSchema.statics.createUser = async function (
     throw Error("Remove the whitespace in the password field");
   }
 
+  email = email.toLowerCase();
+
   let userObj = {
     firstName,
     lastName,
@@ -228,6 +230,8 @@ userSchema.statics.createUsers = async function (users, userType) {
       userObj.grade = grade;
       userObj.section = section;
     }
+
+    email = email.toLowerCase();
 
     userObjects.push(userObj);
   }
