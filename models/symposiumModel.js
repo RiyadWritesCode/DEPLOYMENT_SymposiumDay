@@ -311,15 +311,22 @@ symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
       .session(session);
 
     const enrolledStudentsByBlock = new Map();
+    const classNameBlocks = new Map();
 
     // Map students to their enrolled classes by block
     classes.forEach((cls) => {
       cls.students.forEach((student) => {
+        const studentIdStr = student.student_id.toString();
         const block = cls.block.toString();
-        if (!enrolledStudentsByBlock.has(student.student_id.toString())) {
-          enrolledStudentsByBlock.set(student.student_id.toString(), new Set());
+        if (!enrolledStudentsByBlock.has(studentIdStr)) {
+          enrolledStudentsByBlock.set(studentIdStr, new Set());
         }
-        enrolledStudentsByBlock.get(student.student_id.toString()).add(block);
+        enrolledStudentsByBlock.get(studentIdStr).add(block);
+
+        if (!classNameBlocks.has(studentIdStr)) {
+          classNameBlocks.set(studentIdStr, new Set());
+        }
+        classNameBlocks.get(studentIdStr).add(cls.name);
       });
     });
 
@@ -331,15 +338,22 @@ symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
       for (let student of allStudents) {
         const studentIdStr = student._id.toString();
         const studentEnrolledBlocks = enrolledStudentsByBlock.get(studentIdStr) || new Set();
+        const studentEnrolledClassNames = classNameBlocks.get(studentIdStr) || new Set();
 
         // Skip if student is already enrolled in a class for this block
-        if (studentEnrolledBlocks.has(cls.block.toString())) continue;
+        if (
+          studentEnrolledBlocks.has(cls.block.toString()) ||
+          studentEnrolledClassNames.has(cls.name)
+        )
+          continue;
 
         const canJoin = cls.gender === "all" || cls.gender === student.gender;
         if (canJoin && cls.students.length < cls.maxStudents) {
           cls.students.push({ student_id: student._id, attendance: null });
           studentEnrolledBlocks.add(cls.block.toString());
+          studentEnrolledClassNames.add(cls.name);
           enrolledStudentsByBlock.set(studentIdStr, studentEnrolledBlocks);
+          classNameBlocks.set(studentIdStr, studentEnrolledClassNames);
           await cls.save({ session: session });
           updatesMade = true;
         }
