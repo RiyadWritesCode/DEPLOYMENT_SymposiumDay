@@ -176,7 +176,7 @@ userSchema.statics.createUsers = async function (users, userType) {
   const emailSet = new Set();
 
   for (let index = 0; index < users.length; index++) {
-    const { firstName, lastName, email, password, gender, grade, section, rowNum } = users[index];
+    let { firstName, lastName, email, password, gender, grade, section, rowNum } = users[index];
     email = email.toLowerCase();
 
     if (!firstName || !lastName || !email || !password) {
