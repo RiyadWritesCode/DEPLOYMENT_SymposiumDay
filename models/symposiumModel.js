@@ -23,18 +23,22 @@ const symposiumSchema = new Schema(
       type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       required: true,
     },
-    permissions: {
-      presentersCreatingClasses: { type: Boolean, required: true, default: false },
-      presentersDeletingClasses: { type: Boolean, required: true, default: false },
-      studentsJoiningClasses: { type: Boolean, required: true, default: false },
-      studentsLeavingClasses: { type: Boolean, required: true, default: false },
-    },
     classes: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Class",
       },
     ],
+    permissions: {
+      presentersCreatingClasses: { type: Boolean, required: true, default: false },
+      presentersDeletingClasses: { type: Boolean, required: true, default: false },
+      studentsJoiningClasses: { type: Boolean, required: true, default: false },
+      studentsLeavingClasses: { type: Boolean, required: true, default: false },
+    },
+    settings: {
+      studentsSeeingClassmates: { type: Boolean, required: true, default: false },
+      studentsSeeingGender: { type: Boolean, required: true, default: false },
+    },
   },
   { timestamps: true }
 );

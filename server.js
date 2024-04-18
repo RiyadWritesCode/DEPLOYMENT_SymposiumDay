@@ -32,7 +32,10 @@ app.use(express.json({ limit: "200kb" }));
 app.use(morgan("dev"));
 
 // Logging to disk
-const logDirectory = path.join(__dirname, "log");
+const logDirectory = path.join(__dirname, "var/log");
+
+// Ensure the directory exists, create it if it doesn't
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory, { recursive: true });
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
 
 // Create a rotating write stream
