@@ -284,6 +284,65 @@ symposiumSchema.statics.removeUsers = async function (users, userType, symposium
   }
 };
 
+symposiumSchema.statics.addClasses = async function (classes, symposium_id) {
+  const symposium = await this.findById(symposium_id);
+  if (!symposium) {
+    throw new Error("Symposium not found");
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    let addedClasses = [];
+
+    for (let thisClass of classes) {
+      const { presenterEmail, name, shortDescription, block, room, maxStudents, gender, rowNum } =
+        thisClass;
+
+      const presenter = await mongoose
+        .model("User")
+        .findOne({ email: presenterEmail })
+        .session(session);
+      if (!presenter) {
+        throw new Error(
+          `A presenter with the email ${presenterEmail} was not found on row ${rowNum}`
+        );
+      }
+      if (!symposium.presenters.includes(presenter._id)) {
+        throw new Error(`The presenter on row ${rowNum} is not enrolled in the symposium`);
+      }
+      if (presenter.userType !== "presenter") {
+        throw new Error(`The user on row ${rowNum} is not a presenter`);
+      }
+
+      // Use the createClass static method from classSchema
+      const newClass = await mongoose.model("Class").createClass(
+        name,
+        [block],
+        maxStudents,
+        shortDescription,
+        room,
+        presenter._id,
+        gender,
+        symposium_id,
+        session // Pass the transaction session
+      );
+      symposium.classes.push(newClass._id);
+      addedClasses.push(newClass);
+    }
+
+    await symposium.save({ session: session });
+    await session.commitTransaction();
+    return { symposium, addedClasses };
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+};
+
 symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
   const session = await mongoose.startSession();
   try {

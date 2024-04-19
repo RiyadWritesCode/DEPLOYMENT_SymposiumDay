@@ -71,7 +71,8 @@ classSchema.statics.createClass = async function (
   room,
   presenter_id,
   gender,
-  symposium_id
+  symposium_id,
+  session = null // Optional session parameter for transactions
 ) {
   // Ensure all fields are provided
   if (
@@ -122,12 +123,15 @@ classSchema.statics.createClass = async function (
     throw new Error("The admin has locked presenters from creating classes for this symposium.");
   }
 
-  const session = await mongoose.startSession();
+  let isExternalSession = !!session;
+  if (!session) {
+    session = await mongoose.startSession();
+    await session.startTransaction();
+  }
+
   let createdClasses = [];
 
   try {
-    await session.startTransaction();
-
     // Fetch all symposiums happening on the same date to ensure no block overlaps for the presenter
     const symposiumsOnSameDate = await mongoose
       .model("Symposium")
@@ -143,8 +147,9 @@ classSchema.statics.createClass = async function (
         }).session(session);
 
         if (existingClassInBlock) {
+          const presenter = await mongoose.model("User").findById(presenter_id).session(session);
           throw new Error(
-            `Presenter already has a class in block ${block} for a symposium on ${symposium.date}`
+            `Presenter with email ${presenter.email} already has a class in block ${block} for a symposium on ${symposium.date}`
           );
         }
       }
@@ -183,13 +188,20 @@ classSchema.statics.createClass = async function (
     }
 
     await symposium.save({ session });
-    await session.commitTransaction();
+
+    if (!isExternalSession) {
+      await session.commitTransaction();
+    }
     return createdClasses;
   } catch (error) {
-    await session.abortTransaction();
+    if (!isExternalSession) {
+      await session.abortTransaction();
+    }
     throw error;
   } finally {
-    session.endSession();
+    if (!isExternalSession) {
+      await session.endSession();
+    }
   }
 };
 classSchema.statics.deleteClass = async function (class_id, user, session = null) {

@@ -4,10 +4,27 @@ const { encrypt, decrypt } = require("../models/encryption");
 const { transporter } = require("./emailController");
 
 const createSymposium = async (req, res) => {
-  const { name, date, permissions } = req.body;
+  const { name, date, permissions, settings } = req.body;
 
   try {
-    const symposium = await Symposium.createSymposium(name, date, permissions);
+    const updatedSymposiumAndClasses = await Symposium.createSymposium(
+      name,
+      date,
+      permissions,
+      settings
+    );
+    res.status(200).json(updatedSymposiumAndClasses);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const addClassesToSymposium = async (req, res) => {
+  const { classes } = req.body;
+  const { id } = req.params;
+
+  try {
+    const symposium = await Symposium.addClasses(classes, id);
     res.status(200).json(symposium);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -15,7 +32,7 @@ const createSymposium = async (req, res) => {
 };
 
 const updateSymposium = async (req, res) => {
-  const { name, date, permissions } = req.body;
+  const { name, date, permissions, settings } = req.body;
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -31,6 +48,9 @@ const updateSymposium = async (req, res) => {
   }
   if (permissions) {
     updates.permissions = permissions;
+  }
+  if (settings) {
+    updates.settings = settings;
   }
 
   const symposium = await Symposium.findOneAndUpdate({ _id: id }, updates, { new: true });
@@ -507,6 +527,7 @@ const sendScheduleToStudents = async (req, res) => {
 };
 module.exports = {
   createSymposium,
+  addClassesToSymposium,
   updateSymposium,
   addUsersToSymposiumWithEmails,
   removeUsersFromSymposiumWithEmails,

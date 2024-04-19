@@ -14,6 +14,7 @@ const {
 
 const {
   createSymposium,
+  addClassesToSymposium,
   addUsersToSymposiumWithEmails,
   removeUsersFromSymposiumWithEmails,
   removeUserFromSymposium,
@@ -45,6 +46,7 @@ router.patch("/users/:id", updateUser);
 
 // Symposium Routes
 router.post("/symposiums/create", createSymposium);
+router.post("/symposiums/:id/classes/create", addClassesToSymposium);
 router.patch("/symposiums/:id", updateSymposium);
 router.get("/symposiums/all", getSymposiums);
 router.delete("/symposiums/:id", deleteSymposium);
