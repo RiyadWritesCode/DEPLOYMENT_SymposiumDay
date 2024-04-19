@@ -9,6 +9,14 @@
   display: block;
 }
 
+.h3 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 22px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  display: block;
+}
+
 /* RADIOS */
 
 .radioGroup {

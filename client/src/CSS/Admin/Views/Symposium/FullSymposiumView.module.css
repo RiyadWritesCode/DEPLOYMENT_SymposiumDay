@@ -64,6 +64,14 @@
   }
 }
 
+/* Add Classes */
+.addClasses {
+  padding: 16px 24px;
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
 /* Classes */
 .classes {
   padding: 16px 24px;
@@ -76,11 +84,16 @@
   margin-bottom: 12px;
 }
 
+.classContainer {
+  height: 600px;
+  overflow: scroll;
+}
+
 .class {
-  text-align: left;
-  margin-left: 4px;
+  margin: 20px 0 20px 4px;
   border-left: 3px solid #ea9010;
   padding: 10px 24px 10px 16px;
+  text-align: left;
 }
 
 .className {

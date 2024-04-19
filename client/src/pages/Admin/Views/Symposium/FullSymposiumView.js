@@ -4,31 +4,35 @@ import styles from "../../../../CSS/Admin/Views/Symposium/FullSymposiumView.modu
 import { useAuthContext } from "../../../../hooks/useAuthContext.js";
 import { useLogout } from "../../../../hooks/useLogout.js";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { FixedSizeList as FixedSizeList } from "react-window";
-import { VariableSizeList as VariableSizeList } from "react-window";
+import { useParams, Link } from "react-router-dom";
+import { FixedSizeList as List } from "react-window";
 
 import * as XLSX from "xlsx/xlsx";
 
 import Navbar from "../../../../components/Navbar.js";
 
 const FullSymposiumView = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
 
   const { user } = useAuthContext();
   const { logout } = useLogout();
   const [symposium, setSymposium] = useState(null);
+
   const [classQuery, setClassQuery] = useState("");
   const [classes, setClasses] = useState([]);
   const [students, setStudents] = useState([]);
   const [presenters, setPresenters] = useState([]);
+
+  const [addClassesWithExcelFile, setAddClassesWithExcelFile] = useState(null);
+  const [addClassesWithExcelHelp, setAddClassesWithExcelHelp] = useState(false);
+  const [addClassesWithExcelInputKey, setAddClassesWithExcelInputKey] = useState(Date.now());
 
   const [isFetchingSymposium, setIsFetchingSymposium] = useState(true);
   const [isFetchingSymposiumStudents, setIsFetchingSymposiumStudents] = useState(true);
   const [isFetchingSymposiumPresenters, setIsFetchingSymposiumPresenters] = useState(true);
   const [isFetchingSymposiumClasses, setIsFetchingSymposiumClasses] = useState(true);
 
+  const [isLoadingAddClassesWithExcel, setIsLoadingAddClassesWithExcel] = useState(false);
   const [isLoadingFillAvailableSpaces, setIsLoadingFillAvailableSpaces] = useState(false);
   const [isLoadingSendScheduleToPresenters, setIsLoadingSendScheduleToPresenters] = useState(false);
   const [isLoadingSendScheduleToStudents, setIsLoadingSendScheduleToStudents] = useState(false);
@@ -41,10 +45,11 @@ const FullSymposiumView = () => {
   const [isLoadingAddOrRemoveStudentsByGrade, setIsLoadingAddOrRemoveStudentsByGrade] =
     useState(false);
 
+  const [addClassesWithExcelError, setAddClassesWithExcelError] = useState(null);
   const [symposiumEditsError, setSymposiumEditsError] = useState(null);
-  const [fillAvailableSpacesError, setFillAvailableSpacesError] = useState(null);
-  const [sendScheduleToStudentsError, setSendScheduleToStudentsError] = useState(null);
-  const [sendScheduleToPresentersError, setSendScheduleToPresentersError] = useState(null);
+  // const [fillAvailableSpacesError, setFillAvailableSpacesError] = useState(null);
+  // const [sendScheduleToStudentsError, setSendScheduleToStudentsError] = useState(null);
+  // const [sendScheduleToPresentersError, setSendScheduleToPresentersError] = useState(null);
   const [addPresentersWithExcelError, setAddPresentersWithExcelError] = useState(null);
   const [removePresentersWithExcelError, setRemovePresentersWithExcelError] = useState(null);
   const [addStudentsWithExcelError, setAddStudentsWithExcelError] = useState(null);
@@ -57,6 +62,8 @@ const FullSymposiumView = () => {
   const [presentersDeletingClasses, setPresentersDeletingClasses] = useState(null);
   const [studentsJoiningClasses, setStudentsJoiningClasses] = useState(null);
   const [studentsLeavingClasses, setStudentsLeavingClasses] = useState(null);
+  const [studentsSeeingClassmates, setStudentsSeeingClassmates] = useState(false);
+  const [studentsSeeingClassGender, setStudentsSeeingClassGender] = useState(false);
 
   const [presenterQuery, setPresenterQuery] = useState("");
   const [addPresentersWithExcelFile, setAddPresentersWithExcelFile] = useState(null);
@@ -130,79 +137,115 @@ const FullSymposiumView = () => {
     return requiredSpacesInBlocks - filledSpacesInBlocks;
   };
 
+  const toggleAddClassesWithExcelHelp = () => {
+    setAddClassesWithExcelHelp(!addClassesWithExcelHelp);
+  };
+
+  const handleAddClassesWithExcelReset = () => {
+    setAddClassesWithExcelFile(null);
+    setAddClassesWithExcelInputKey(Date.now());
+  };
+
+  const handleAddClassesWithExcel = (event) => {
+    event.preventDefault();
+    setAddClassesWithExcelError(null);
+    setIsLoadingAddClassesWithExcel(true);
+
+    if (!addClassesWithExcelFile) {
+      setAddClassesWithExcelError("Please select a file before submitting.");
+      setIsLoadingAddClassesWithExcel(false);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsBinaryString(addClassesWithExcelFile);
+
+    reader.onload = async (event) => {
+      try {
+        const data = event.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        let parsedData = XLSX.utils.sheet_to_json(sheet);
+
+        parsedData.map((thisClass, index) => {
+          parsedData[index].rowNum = thisClass.__rowNum__ + 1;
+          if (!thisClass.presenterEmail) {
+            throw new Error(
+              "You did not provide a presenterEmail for the class on row " + thisClass.rowNum
+            );
+          }
+          if (!thisClass.name) {
+            throw new Error("You did not provide a name for the class on row " + thisClass.rowNum);
+          }
+          if (!thisClass.shortDescription) {
+            throw new Error(
+              "You did not provide a shortDescription for the class on row " + thisClass.rowNum
+            );
+          }
+          if (!thisClass.block) {
+            throw new Error("You did not provide a block for the class on row " + thisClass.rowNum);
+          }
+          if (!thisClass.room) {
+            throw new Error("You did not provide a room for the class on row " + thisClass.rowNum);
+          }
+          if (!thisClass.maxStudents) {
+            throw new Error(
+              "You did not provide maxStudents for the class on row " + thisClass.rowNum
+            );
+          }
+          if (!thisClass.gender) {
+            throw new Error(
+              "You did not provide a gender for the class on row " + thisClass.rowNum
+            );
+          }
+        });
+
+        const response = await fetch(`/api/admin/symposiums/${id}/classes/create`, {
+          method: "POST",
+          body: JSON.stringify({
+            classes: parsedData,
+          }),
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+          throw new Error(json.error);
+        }
+        if (response.ok) {
+          setClasses([...json.addedClasses.flat(), ...classes]);
+          console.log([...json.addedClasses.flat()]);
+          setSymposium(json.symposium);
+        }
+
+        handleAddClassesWithExcelReset();
+      } catch (error) {
+        setAddClassesWithExcelError(error.toString());
+        setIsLoadingAddClassesWithExcel(false);
+      } finally {
+        setIsLoadingAddClassesWithExcel(false);
+        handleAddClassesWithExcelReset();
+      }
+    };
+
+    reader.onerror = (error) => {
+      setAddClassesWithExcelError("Failed to read file: " + error.message);
+      setIsLoadingAddClassesWithExcel(false);
+      return;
+    };
+  };
+
   const handleClassSearchChange = (event) => {
     setClassQuery(event.target.value.toLowerCase());
   };
   const filteredClasses = classes.filter((thisClass) =>
     thisClass.name.toLowerCase().includes(classQuery.toLowerCase())
   );
-
-  const getItemHeight = (index) => {
-    const baseHeight = 190; // Minimum height for an item
-    const extraLineHeight = 13; // Additional height per line of description beyond the first line
-
-    const lines = Math.ceil(filteredClasses[index].shortDescription.length / 30); // Example estimation
-    return baseHeight + lines * extraLineHeight;
-  };
-
-  const ClassRow = ({ index, style, data }) => {
-    const thisClass = data[index];
-    return (
-      <div style={style} key={thisClass._id}>
-        <div className={styles.class}>
-          <div className={styles.classHeader}>
-            <Link
-              to={`/admin/symposiums/${symposium._id}/class/${thisClass._id}`}
-              className={styles.className}
-            >
-              <span className={styles.classColor}>{thisClass.name}</span> by{" "}
-              <span className={styles.presenterColor}>
-                {thisClass.presenterFirstName} {thisClass.presenterLastName}
-              </span>{" "}
-            </Link>
-            <button
-              className={forms.deleteIcon}
-              onClick={async () => {
-                setIsFetchingSymposiumClasses(true);
-                const response = await fetch("/api/presenter/classes/" + thisClass._id, {
-                  method: "DELETE",
-                  headers: {
-                    Authorization: `Bearer ${user.token}`,
-                  },
-                });
-
-                const json = await response.json();
-                if (response.ok) {
-                  setClasses(classes.filter((c) => c._id !== json._id));
-                  setIsFetchingSymposiumClasses(false);
-                }
-              }}
-              disabled={isFetchingSymposiumClasses}
-            >
-              {isFetchingSymposiumClasses ? (
-                <div className={forms.smallRedSpinner}></div>
-              ) : (
-                <span className="material-symbols-outlined">delete</span>
-              )}{" "}
-            </button>
-          </div>
-          <p>
-            <strong>Block:</strong> {thisClass.block} | <strong>Room:</strong> {thisClass.room}
-          </p>
-          <p>
-            <strong>Short description:</strong>
-          </p>
-          <p>{thisClass.shortDescription}</p>
-          <p>
-            <strong>Students:</strong> {thisClass.students.length}/{thisClass.maxStudents}
-          </p>
-          <p>
-            <strong>Gender:</strong> {thisClass.gender}
-          </p>
-        </div>
-      </div>
-    );
-  };
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -228,6 +271,14 @@ const FullSymposiumView = () => {
     setStudentsLeavingClasses(event.target.value);
   };
 
+  const handleStudentsSeeingClassmatesChange = (event) => {
+    setStudentsSeeingClassmates(event.target.value);
+  };
+
+  const handleStudentsSeeingClassGenderChange = (event) => {
+    setStudentsSeeingClassGender(event.target.value);
+  };
+
   const handleSymposiumEdit = (event) => {
     event.preventDefault();
     const editUser = async () => {
@@ -244,6 +295,10 @@ const FullSymposiumView = () => {
             presentersDeletingClasses,
             studentsJoiningClasses,
             studentsLeavingClasses,
+          },
+          settings: {
+            studentsSeeingClassmates,
+            studentsSeeingClassGender,
           },
         }),
         headers: {
@@ -727,6 +782,8 @@ const FullSymposiumView = () => {
         setPresentersDeletingClasses(json.permissions.presentersDeletingClasses.toString());
         setStudentsJoiningClasses(json.permissions.studentsJoiningClasses.toString());
         setStudentsLeavingClasses(json.permissions.studentsLeavingClasses.toString());
+        setStudentsSeeingClassmates(json.settings.studentsSeeingClassmates.toString());
+        setStudentsSeeingClassGender(json.settings.studentsSeeingClassGender.toString());
         setIsFetchingSymposium(false);
       }
       if (response.status === 401) {
@@ -735,6 +792,7 @@ const FullSymposiumView = () => {
     };
 
     fetchSymposium();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.token]);
 
   // Fetch classes data after symposium is fetched
@@ -761,6 +819,7 @@ const FullSymposiumView = () => {
     };
 
     fetchClass();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symposium, user.token]);
 
   useEffect(() => {
@@ -803,6 +862,7 @@ const FullSymposiumView = () => {
       }
     };
     fetchStudents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symposium, user.token]);
 
   return (
@@ -947,6 +1007,60 @@ const FullSymposiumView = () => {
             </ul>
           </div>
         </div>
+        <div className={`${styles.addClasses} ${sidebar.box}`}>
+          <h2 className={styles.h2}>Add Classes Using Excel:</h2>
+          <form onSubmit={handleAddClassesWithExcel}>
+            <input
+              key={addClassesWithExcelInputKey}
+              type="file"
+              accept=".xlsx,.xls"
+              className={forms.fileInput} // Assuming you have CSS for this
+              onChange={(e) => setAddClassesWithExcelFile(e.target.files[0])}
+              onClick={(e) => (e.target.value = null)}
+            />
+            <button disabled={isLoadingAddClassesWithExcel} className={forms.button}>
+              {isLoadingAddClassesWithExcel ? (
+                <div className={forms.spinner}></div>
+              ) : (
+                "ADD STUDENTS"
+              )}
+            </button>
+            {addClassesWithExcelError && (
+              <div className={forms.error}>{addClassesWithExcelError}</div>
+            )}
+          </form>
+          <div className={forms.fileInputHelpContainer} style={{ textAlign: "left" }}>
+            <p className={forms.fileInputHelp} onClick={toggleAddClassesWithExcelHelp}>
+              Help {addClassesWithExcelHelp ? "(hide)" : "(show)"}
+            </p>
+            <div
+              className={forms.fileInputText}
+              style={{ display: addClassesWithExcelHelp ? "block" : "none" }}
+            >
+              <strong>Requirements:</strong>
+              <ul>
+                <li>
+                  <a
+                    href="https://docs.google.com/spreadsheets/d/1PDlovLHYNgsyJiT4gjEsXOFnhVWxSrQv0APQsXNUlsw/edit?usp=sharing"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Follow this exact format
+                  </a>
+                </li>
+                <li>All classes are new (are not added to the symposium already)</li>
+              </ul>
+              <strong>Steps:</strong>
+              <ol>
+                <li>Follow the format of the example above</li>
+                <li>Choose and upload your excel file</li>
+                <li>Click add classes</li>
+                <li>If there is an error with one of the classes, none will be added</li>
+                <li>If all classes have no errors, all will be added</li>
+              </ol>
+            </div>
+          </div>
+        </div>
 
         <div className={`${styles.classes} ${sidebar.box}`}>
           <h2 className={styles.h2}>
@@ -964,15 +1078,67 @@ const FullSymposiumView = () => {
               <span className="material-icons">search</span>
             </div>
           </div>
-          <VariableSizeList
-            height={filteredClasses.length === 0 ? 100 : 800} // Adjust based on your layout
-            width={"100%"} // Adjust based on your layout
-            itemCount={filteredClasses.length}
-            itemSize={getItemHeight} // Use the dynamic height function
-            itemData={filteredClasses} // Pass the data to the list
+          <div
+            className={styles.classContainer}
+            style={filteredClasses.length === 0 ? { height: 0 } : {}}
           >
-            {ClassRow}
-          </VariableSizeList>
+            {filteredClasses.map((thisClass) => {
+              return (
+                <div className={styles.class} key={thisClass._id}>
+                  <div className={styles.classHeader}>
+                    <Link
+                      to={`/admin/symposiums/${symposium._id}/class/${thisClass._id}`}
+                      className={styles.className}
+                    >
+                      <span className={styles.classColor}>{thisClass.name}</span> by{" "}
+                      <span className={styles.presenterColor}>
+                        {thisClass.presenterFirstName} {thisClass.presenterLastName}
+                      </span>{" "}
+                    </Link>
+                    <button
+                      className={forms.deleteIcon}
+                      onClick={async () => {
+                        setIsFetchingSymposiumClasses(true);
+                        const response = await fetch("/api/presenter/classes/" + thisClass._id, {
+                          method: "DELETE",
+                          headers: {
+                            Authorization: `Bearer ${user.token}`,
+                          },
+                        });
+
+                        const json = await response.json();
+                        if (response.ok) {
+                          setClasses(classes.filter((c) => c._id !== json._id));
+                          setIsFetchingSymposiumClasses(false);
+                        }
+                      }}
+                      disabled={isFetchingSymposiumClasses}
+                    >
+                      {isFetchingSymposiumClasses ? (
+                        <div className={forms.smallRedSpinner}></div>
+                      ) : (
+                        <span className="material-symbols-outlined">delete</span>
+                      )}{" "}
+                    </button>
+                  </div>
+                  <p>
+                    <strong>Block:</strong> {thisClass.block} | <strong>Room:</strong>{" "}
+                    {thisClass.room}
+                  </p>
+                  <p>
+                    <strong>Short description:</strong>
+                  </p>
+                  <p>{thisClass.shortDescription}</p>
+                  <p>
+                    <strong>Students:</strong> {thisClass.students.length}/{thisClass.maxStudents}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {thisClass.gender}
+                  </p>
+                </div>
+              );
+            })}{" "}
+          </div>
         </div>
 
         <div className={`${styles.header} ${sidebar.box}`}>
@@ -1107,6 +1273,8 @@ const FullSymposiumView = () => {
                 value={date}
                 className={forms.dateInput}
               />
+              <h3 className={forms.h3}>Permissions:</h3>
+
               <label className={forms.inputLabel}>Presenters creating classes:</label>
               <div className={forms.radioGroup}>
                 <input
@@ -1218,6 +1386,63 @@ const FullSymposiumView = () => {
                   Enable
                 </label>
               </div>
+
+              <h3 className={forms.h3}>Settings:</h3>
+              <label className={forms.inputLabel}>Students seeing classmates:</label>
+              <div className={forms.radioGroup}>
+                <input
+                  id="disableStudentsSeeingClassmates"
+                  className={forms.radioInput}
+                  type="radio"
+                  name="studentsSeeingClassmates"
+                  value="false"
+                  checked={studentsSeeingClassmates === "false"}
+                  onChange={handleStudentsSeeingClassmatesChange}
+                />
+                <label className={forms.radioLabel} htmlFor="disableStudentsSeeingClassmates">
+                  Disable
+                </label>
+                <input
+                  id="enableStudentsSeeingClassmates"
+                  className={forms.radioInput}
+                  type="radio"
+                  name="studentsSeeingClassmates"
+                  value="true"
+                  checked={studentsSeeingClassmates === "true"}
+                  onChange={handleStudentsSeeingClassmatesChange}
+                />
+                <label className={forms.radioLabel} htmlFor="enableStudentsSeeingClassmates">
+                  Enable
+                </label>
+              </div>
+              <label className={forms.inputLabel}>Students seeing class gender:</label>
+              <div className={forms.radioGroup}>
+                <input
+                  id="disableStudentsSeeingClassGender"
+                  className={forms.radioInput}
+                  type="radio"
+                  name="studentsSeeingClassGender"
+                  value="false"
+                  checked={studentsSeeingClassGender === "false"}
+                  onChange={handleStudentsSeeingClassGenderChange}
+                />
+                <label className={forms.radioLabel} htmlFor="disableStudentsSeeingClassGender">
+                  Disable
+                </label>
+                <input
+                  id="enableStudentsSeeingClassGender"
+                  className={forms.radioInput}
+                  type="radio"
+                  name="studentsSeeingClassGender"
+                  value="true"
+                  checked={studentsSeeingClassGender === "true"}
+                  onChange={handleStudentsSeeingClassGenderChange}
+                />
+                <label className={forms.radioLabel} htmlFor="enableStudentsSeeingClassGender">
+                  Enable
+                </label>
+              </div>
+
               <button
                 disabled={isFetchingSymposium || isLoadingSymposiumEdits}
                 className={forms.button}
@@ -1363,7 +1588,7 @@ const FullSymposiumView = () => {
               </div>
             </div>
 
-            <FixedSizeList
+            <List
               height={filteredPresenters.length === 0 ? 100 : 500} // Adjust based on your layout
               itemCount={filteredPresenters.length}
               itemSize={125}
@@ -1371,7 +1596,7 @@ const FullSymposiumView = () => {
               itemData={filteredPresenters} // Pass filteredUsers as itemData
             >
               {PresenterRow}
-            </FixedSizeList>
+            </List>
           </div>
 
           <div className={`${styles.rightSetup}  ${sidebar.box}`}>
@@ -1596,7 +1821,7 @@ const FullSymposiumView = () => {
                 </div>
               </div>
 
-              <FixedSizeList
+              <List
                 height={filteredStudents.length === 0 ? 100 : 400} // Adjust based on your layout
                 itemCount={filteredStudents.length}
                 itemSize={180}
@@ -1604,7 +1829,7 @@ const FullSymposiumView = () => {
                 itemData={filteredStudents} // Pass filteredUsers as itemData
               >
                 {StudentRow}
-              </FixedSizeList>
+              </List>
             </div>
           </div>
         </div>
