@@ -23,6 +23,9 @@ const SymposiumView = () => {
   const [studentsJoiningClasses, setStudentsJoiningClasses] = useState(false);
   const [studentsLeavingClasses, setStudentsLeavingClasses] = useState(false);
 
+  const [studentsSeeingClassmates, setStudentsSeeingClassmates] = useState(false);
+  const [studentsSeeingClassGender, setStudentsSeeingClassGender] = useState(false);
+
   const [searchDate, setSearchDate] = useState("");
 
   const handleSearchDateChange = (event) => {
@@ -53,6 +56,14 @@ const SymposiumView = () => {
 
   const handleStudentsLeavingClassesChange = (event) => {
     setStudentsLeavingClasses(event.target.value);
+  };
+
+  const handleStudentsSeeingClassmatesChange = (event) => {
+    setStudentsSeeingClassmates(event.target.value);
+  };
+
+  const handleStudentsSeeingClassGenderChange = (event) => {
+    setStudentsSeeingClassGender(event.target.value);
   };
 
   const Row = ({ index, style, data }) => {
@@ -109,6 +120,14 @@ const SymposiumView = () => {
             <strong>Students leaving classes:</strong>{" "}
             {symposium.permissions.studentsLeavingClasses ? "Enabled" : "Disabled"}
           </p>
+          <p>
+            <strong>Students seeing classmates:</strong>{" "}
+            {symposium.settings.studentsSeeingClassmates ? "Enabled" : "Disabled"}
+          </p>
+          <p>
+            <strong>Students seeing class gender:</strong>{" "}
+            {symposium.settings.studentsSeeingClassGender ? "Enabled" : "Disabled"}
+          </p>
         </div>
       </div>
     );
@@ -131,6 +150,10 @@ const SymposiumView = () => {
             studentsJoiningClasses,
             studentsLeavingClasses,
           },
+          settings: {
+            studentsSeeingClassmates,
+            studentsSeeingClassGender,
+          },
         }),
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -151,6 +174,9 @@ const SymposiumView = () => {
         setPresentersDeletingClasses(false);
         setStudentsJoiningClasses(false);
         setStudentsLeavingClasses(false);
+
+        setStudentsSeeingClassmates(false);
+        setStudentsSeeingClassGender(false);
       }
       setIsLoading(false);
     };
@@ -196,7 +222,7 @@ const SymposiumView = () => {
         <List
           height={835}
           itemCount={filteredSymposiums.length}
-          itemSize={150}
+          itemSize={205}
           width={"100%"}
           itemData={filteredSymposiums}
         >
@@ -218,6 +244,7 @@ const SymposiumView = () => {
           <label className={forms.inputLabelInline}>Date:</label>
           <input type="date" onChange={handleDateChange} value={date} className={forms.dateInput} />
 
+          <h3 className={forms.h3}>Permissions:</h3>
           <label className={forms.inputLabel}>Presenters creating classes:</label>
           <div className={forms.radioGroup}>
             <input
@@ -326,6 +353,62 @@ const SymposiumView = () => {
               onChange={handleStudentsLeavingClassesChange}
             />
             <label className={forms.radioLabel} htmlFor="enableStudentsLeavingClasses">
+              Enable
+            </label>
+          </div>
+
+          <h3 className={forms.h3}>Settings:</h3>
+          <label className={forms.inputLabel}>Students seeing classmates:</label>
+          <div className={forms.radioGroup}>
+            <input
+              id="disableStudentsSeeingClassmates"
+              className={forms.radioInput}
+              type="radio"
+              name="studentsSeeingClassmates"
+              value="false"
+              checked={studentsSeeingClassmates === "false"}
+              onChange={handleStudentsSeeingClassmatesChange}
+            />
+            <label className={forms.radioLabel} htmlFor="disableStudentsSeeingClassmates">
+              Disable
+            </label>
+            <input
+              id="enableStudentsSeeingClassmates"
+              className={forms.radioInput}
+              type="radio"
+              name="studentsSeeingClassmates"
+              value="true"
+              checked={studentsSeeingClassmates === "true"}
+              onChange={handleStudentsSeeingClassmatesChange}
+            />
+            <label className={forms.radioLabel} htmlFor="enableStudentsSeeingClassmates">
+              Enable
+            </label>
+          </div>
+          <label className={forms.inputLabel}>Students seeing class gender:</label>
+          <div className={forms.radioGroup}>
+            <input
+              id="disableStudentsSeeingClassGender"
+              className={forms.radioInput}
+              type="radio"
+              name="studentsSeeingClassGender"
+              value="false"
+              checked={studentsSeeingClassGender === "false"}
+              onChange={handleStudentsSeeingClassGenderChange}
+            />
+            <label className={forms.radioLabel} htmlFor="disableStudentsSeeingClassGender">
+              Disable
+            </label>
+            <input
+              id="enableStudentsSeeingClassGender"
+              className={forms.radioInput}
+              type="radio"
+              name="studentsSeeingClassGender"
+              value="true"
+              checked={studentsSeeingClassGender === "true"}
+              onChange={handleStudentsSeeingClassGenderChange}
+            />
+            <label className={forms.radioLabel} htmlFor="enableStudentsSeeingClassGender">
               Enable
             </label>
           </div>
