@@ -98,7 +98,7 @@ classSchema.statics.createClass = async function (
   if (name.length < 4 || name.length > 100) {
     throw new Error("Class name must be between 4 and 100 characters long");
   }
-  if (shortDescription.length < 20 || shortDescription.length > 1000) {
+  if (shortDescription.length < 10 || shortDescription.length > 1000) {
     throw new Error("Short description must be between 20 and 150 characters long");
   }
 
