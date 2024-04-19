@@ -30,20 +30,20 @@ const symposiumSchema = new Schema(
       },
     ],
     permissions: {
-      presentersCreatingClasses: { type: Boolean, required: true, default: false },
-      presentersDeletingClasses: { type: Boolean, required: true, default: false },
-      studentsJoiningClasses: { type: Boolean, required: true, default: false },
-      studentsLeavingClasses: { type: Boolean, required: true, default: false },
+      presentersCreatingClasses: { type: Boolean, required: true },
+      presentersDeletingClasses: { type: Boolean, required: true },
+      studentsJoiningClasses: { type: Boolean, required: true },
+      studentsLeavingClasses: { type: Boolean, required: true },
     },
     settings: {
-      studentsSeeingClassmates: { type: Boolean, required: true, default: false },
-      studentsSeeingGender: { type: Boolean, required: true, default: false },
+      studentsSeeingClassmates: { type: Boolean, required: true },
+      studentsSeeingClassGender: { type: Boolean, required: true },
     },
   },
   { timestamps: true }
 );
 
-symposiumSchema.statics.createSymposium = async function (name, date, permissions) {
+symposiumSchema.statics.createSymposium = async function (name, date, permissions, settings) {
   if (
     !name ||
     !date ||
@@ -51,7 +51,9 @@ symposiumSchema.statics.createSymposium = async function (name, date, permission
     !permissions.presentersCreatingClasses ||
     !permissions.presentersDeletingClasses ||
     !permissions.studentsJoiningClasses ||
-    !permissions.studentsLeavingClasses
+    !permissions.studentsLeavingClasses ||
+    !settings.studentsSeeingClassmates ||
+    !settings.studentsSeeingClassGender
   ) {
     throw Error("All fields must be filled.");
   }
@@ -76,8 +78,9 @@ symposiumSchema.statics.createSymposium = async function (name, date, permission
     date,
     presenters: [],
     students: [],
-    permissions,
     classes: [],
+    permissions,
+    settings,
   });
   return symposium;
 };

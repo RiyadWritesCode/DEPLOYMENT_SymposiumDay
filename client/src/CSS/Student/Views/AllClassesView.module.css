@@ -24,8 +24,13 @@
 
 /* ALL CLASSES */
 
+.classContainer {
+  height: 800px;
+  overflow: scroll;
+}
+
 .class {
-  margin-left: 4px;
+  margin: 20px 0 20px 4px;
   border-left: 3px solid #ea9010;
   padding: 10px 24px 10px 16px;
 }

@@ -13,29 +13,12 @@ const MyClassesView = ({ filterBlock }) => {
   const [myClasses, setMyClasses] = useState([]);
 
   const [isFetching, setIsFetching] = useState(true);
+  const [symposium, setSymposium] = useState("");
   const [symposiumFilter, setSymposiumFilter] = useState("");
 
   const handleSymposiumFilterChange = (event) => {
     setSymposiumFilter(event.target.value);
   };
-
-  // Commenting out the filtered list based on search query, selected block, and symposium filter
-  // const filteredClasses = myClasses.filter((c) => {
-  //   const matchesBlockFilter = !filterBlock || c.block === filterBlock;
-  //   const matchesSymposiumFilter = c.symposium_id === symposiumFilter;
-  //   return matchesBlockFilter && matchesSymposiumFilter;
-  // });
-
-  // const blocksToShow = filterBlock
-  //   ? [parseInt(filterBlock)]
-  //   : Array.from({ length: 6 }, (_, i) => i + 1);
-
-  // const classesByBlock = blocksToShow.map((blockNumber) => {
-  //   return {
-  //     blockNumber,
-  //     class: myClasses.find((c) => c.block === blockNumber) || null,
-  //   };
-  // });
 
   const classesByBlock = Array.from({ length: 6 }, (_, i) => i + 1).map((blockNumber) => {
     return {
@@ -78,6 +61,7 @@ const MyClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setMyClasses(json);
+        setSymposium(symposiums.find((s) => s._id === symposiumFilter));
         setIsFetching(false);
       }
       if (response.status === 401) {
@@ -184,20 +168,31 @@ const MyClassesView = ({ filterBlock }) => {
                     <p>
                       <strong>Students:</strong> {thisClass.students.length}/{thisClass.maxStudents}
                     </p>
-                    <p>
-                      <strong>Student List:</strong>
-                    </p>
-                    <ul>
-                      {thisClass.students.map((student) => (
-                        <li>
-                          {student.studentFirstName} {student.studentLastName}
-                        </li>
-                      ))}
-                      {thisClass.students.length === 0 && <li>No students</li>}
-                    </ul>
-                    <p>
-                      <strong>Gender:</strong> {thisClass.gender}
-                    </p>
+                    {symposium.settings.studentsSeeingClassmates ? (
+                      <div>
+                        <p>
+                          <strong>Student List:</strong>
+                        </p>
+                        <ul>
+                          {thisClass.students.map((student) => (
+                            <li>
+                              {student.studentFirstName} {student.studentLastName}
+                            </li>
+                          ))}
+                          {thisClass.students.length === 0 && <li>No students</li>}
+                        </ul>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+
+                    {symposium?.settings?.studentsSeeingClassGender ? (
+                      <p>
+                        <strong>Gender:</strong> {thisClass.gender}
+                      </p>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               ) : (

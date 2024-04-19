@@ -4,7 +4,6 @@ import styles from "../../../CSS/Student/Views/AllClassesView.module.css";
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import { useLogout } from "../../../hooks/useLogout";
-import { VariableSizeList as List } from "react-window";
 
 const AllClassesView = ({ filterBlock }) => {
   const { user } = useAuthContext();
@@ -19,6 +18,7 @@ const AllClassesView = ({ filterBlock }) => {
   // const [error, setError] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [symposium, setSymposium] = useState("");
   const [symposiumFilter, setSymposiumFilter] = useState("");
 
   const handleSymposiumFilterChange = (event) => {
@@ -37,113 +37,6 @@ const AllClassesView = ({ filterBlock }) => {
     const matchesSymposiumFilter = c.symposium_id === symposiumFilter;
     return matchesSearchQuery && matchesBlockFilter && matchesSymposiumFilter;
   });
-
-  const getItemHeight = (index) => {
-    const baseHeight = 190; // Minimum height for an item
-    const extraLineHeight = 13; // Additional height per line of description beyond the first line
-
-    const lines = Math.ceil(filteredClasses[index].shortDescription.length / 30); // Example estimation
-    return baseHeight + lines * extraLineHeight;
-  };
-
-  const Row = ({ index, style, data }) => {
-    const thisClass = data[index];
-    return (
-      <div style={style} key={thisClass._id}>
-        <div className={styles.class}>
-          <div className={styles.classHeader}>
-            <h3>
-              <span className={styles.classColor}>{thisClass.name}</span> by{" "}
-              <span className={styles.presenterColor}>
-                {thisClass.presenterFirstName} {thisClass.presenterLastName}
-              </span>
-            </h3>
-            {thisClass.students.some((student) => student.student_id === user._id) ? (
-              <button
-                className={`${forms.ghostButton} ${forms.ghostButtonRed}`}
-                onClick={async () => {
-                  const isConfirmed = window.confirm("Are you sure you want to leave this class?");
-                  if (isConfirmed) {
-                    setIsFetching(true);
-                    const response = await fetch(
-                      `/api/student/classes/${thisClass._id}/${user._id}/leave`,
-                      {
-                        method: "DELETE",
-                        headers: {
-                          Authorization: `Bearer ${user.token}`,
-                        },
-                      }
-                    );
-
-                    const json = await response.json();
-                    if (response.ok) {
-                      setAllClasses((prevClasses) =>
-                        prevClasses.map((cls) => (cls._id === json._id ? json : cls))
-                      );
-                      setIsFetching(false);
-                    }
-                    if (!response.ok) {
-                      alert(json.error);
-                      setIsFetching(false);
-                    }
-                  }
-                }}
-                disabled={isFetching}
-              >
-                {isFetching ? <div className={forms.redSpinner}></div> : "LEAVE"}
-              </button>
-            ) : thisClass.students.length < thisClass.maxStudents ? (
-              <button
-                className={`${forms.ghostButton} ${forms.ghostButtonGreen}`}
-                onClick={async () => {
-                  setIsFetching(true);
-                  const response = await fetch(
-                    `/api/student/classes/${thisClass._id}/${user._id}/join`,
-                    {
-                      method: "PATCH",
-                      headers: {
-                        Authorization: `Bearer ${user.token}`,
-                      },
-                    }
-                  );
-
-                  const json = await response.json();
-                  if (response.ok) {
-                    setAllClasses((prevClasses) =>
-                      prevClasses.map((cls) => (cls._id === json._id ? json : cls))
-                    );
-                    setIsFetching(false);
-                  }
-                  if (!response.ok) {
-                    alert(json.error);
-                    setIsFetching(false);
-                  }
-                }}
-                disabled={isFetching}
-              >
-                {isFetching ? <div className={forms.spinner}></div> : "JOIN"}
-              </button>
-            ) : (
-              <div className={`${forms.ghostButtonOrange} ${forms.ghostButton}`}>FULL</div>
-            )}
-          </div>
-          <p>
-            <strong>Block:</strong> {thisClass.block} | <strong>Room:</strong> {thisClass.room}
-          </p>
-          <p>
-            <strong>Short description:</strong>
-          </p>
-          <p>{thisClass.shortDescription}</p>
-          <p>
-            <strong>Students:</strong> {thisClass.students.length}/{thisClass.maxStudents}
-          </p>
-          <p>
-            <strong>Gender:</strong> {thisClass.gender}
-          </p>
-        </div>
-      </div>
-    );
-  };
 
   useEffect(() => {
     setIsFetching(true);
@@ -180,11 +73,12 @@ const AllClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setAllClasses(json);
+        setSymposium(symposiums.find((s) => s._id === symposiumFilter));
         setIsFetching(false);
       }
     };
     fetchClasses();
-  }, [symposiumFilter, user.token]);
+  }, [symposiumFilter, symposiums, user.token]);
 
   return (
     <div className={`${styles.container} ${sidebar.box}`}>
@@ -227,15 +121,113 @@ const AllClassesView = ({ filterBlock }) => {
           <span className="material-icons">search</span>
         </div>
       </div>
-      <List
-        height={filteredClasses.length === 0 ? 200 : 800} // Adjust based on your layout
-        width={"100%"} // Adjust based on your layout
-        itemCount={filteredClasses.length}
-        itemSize={getItemHeight} // Use the dynamic height function
-        itemData={filteredClasses} // Pass the data to the list
+
+      <div
+        className={styles.classContainer}
+        style={filteredClasses.length === 0 ? { height: 0 } : {}}
       >
-        {Row}
-      </List>
+        {filteredClasses.map((thisClass) => {
+          return (
+            <div className={styles.class} key={thisClass._id}>
+              <div className={styles.classHeader}>
+                <h3>
+                  <span className={styles.classColor}>{thisClass.name}</span> by{" "}
+                  <span className={styles.presenterColor}>
+                    {thisClass.presenterFirstName} {thisClass.presenterLastName}
+                  </span>
+                </h3>
+                {thisClass.students.some((student) => student.student_id === user._id) ? (
+                  <button
+                    className={`${forms.ghostButton} ${forms.ghostButtonRed}`}
+                    onClick={async () => {
+                      const isConfirmed = window.confirm(
+                        "Are you sure you want to leave this class?"
+                      );
+                      if (isConfirmed) {
+                        setIsFetching(true);
+                        const response = await fetch(
+                          `/api/student/classes/${thisClass._id}/${user._id}/leave`,
+                          {
+                            method: "DELETE",
+                            headers: {
+                              Authorization: `Bearer ${user.token}`,
+                            },
+                          }
+                        );
+
+                        const json = await response.json();
+                        if (response.ok) {
+                          setAllClasses((prevClasses) =>
+                            prevClasses.map((cls) => (cls._id === json._id ? json : cls))
+                          );
+                          setIsFetching(false);
+                        }
+                        if (!response.ok) {
+                          alert(json.error);
+                          setIsFetching(false);
+                        }
+                      }
+                    }}
+                    disabled={isFetching}
+                  >
+                    {isFetching ? <div className={forms.redSpinner}></div> : "LEAVE"}
+                  </button>
+                ) : thisClass.students.length < thisClass.maxStudents ? (
+                  <button
+                    className={`${forms.ghostButton} ${forms.ghostButtonGreen}`}
+                    onClick={async () => {
+                      setIsFetching(true);
+                      const response = await fetch(
+                        `/api/student/classes/${thisClass._id}/${user._id}/join`,
+                        {
+                          method: "PATCH",
+                          headers: {
+                            Authorization: `Bearer ${user.token}`,
+                          },
+                        }
+                      );
+
+                      const json = await response.json();
+                      if (response.ok) {
+                        setAllClasses((prevClasses) =>
+                          prevClasses.map((cls) => (cls._id === json._id ? json : cls))
+                        );
+                        setIsFetching(false);
+                      }
+                      if (!response.ok) {
+                        alert(json.error);
+                        setIsFetching(false);
+                      }
+                    }}
+                    disabled={isFetching}
+                  >
+                    {isFetching ? <div className={forms.spinner}></div> : "JOIN"}
+                  </button>
+                ) : (
+                  <div className={`${forms.ghostButtonOrange} ${forms.ghostButton}`}>FULL</div>
+                )}
+              </div>
+              <p>
+                <strong>Block:</strong> {thisClass.block} | <strong>Room:</strong> {thisClass.room}
+              </p>
+              <p>
+                <strong>Short description:</strong>
+              </p>
+              <p>{thisClass.shortDescription}</p>
+              <p>
+                <strong>Students:</strong> {thisClass.students.length}/{thisClass.maxStudents}
+              </p>
+              {symposium?.settings?.studentsSeeingClassGender ? (
+                <p>
+                  <strong>Gender:</strong> {thisClass.gender}
+                </p>
+              ) : (
+                ""
+              )}
+            </div>
+          );
+        })}{" "}
+      </div>
     </div>
   );
 };
