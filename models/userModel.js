@@ -156,7 +156,7 @@ userSchema.statics.createUser = async function (
     },
     function (error, info) {
       if (error) {
-        return console.log(error);
+        console.log(error);
         throw Error("Account information email could not be send to the user.");
       }
       console.log("Message sent: " + info.response);
@@ -267,7 +267,7 @@ userSchema.statics.createUsers = async function (users, userType) {
         },
         function (error, info) {
           if (error) {
-            return console.log(error);
+            console.log(error);
             throw Error("Account information email could not be send to the user.");
           }
           console.log("Message sent: " + info.response);
@@ -305,14 +305,8 @@ userSchema.statics.login = async function (email, password, userType) {
     throw Error(`You are a ${user.userType} but trying to login as a ${userType}!`);
   }
 
-  if (userType !== "admin") {
-    if (user.password !== encrypt(password)) {
-      throw Error("Incorrect password");
-    }
-  } else {
-    if (password !== user.password) {
-      throw Error("Incorrect password");
-    }
+  if (user.password !== encrypt(password)) {
+    throw Error("Incorrect password");
   }
 
   return user;
