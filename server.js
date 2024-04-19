@@ -7,7 +7,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 // HTTP request logger middleware for nodejs
 const morgan = require("morgan");
-const chalk = require("chalk");
 const rfs = require("rotating-file-stream");
 const fs = require("fs");
 
@@ -36,8 +35,9 @@ app.use(morgan("dev"));
 const logDirectory = "/var/log";
 
 // Ensure the directory exists, create it if it doesn't
-fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory, { recursive: true });
-fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+if (!fs.existsSync(logDirectory)) {
+  fs.mkdirSync(logDirectory, { recursive: true });
+}
 
 // Create a rotating write stream
 const accessLogStream = rfs.createStream("access.log", {
@@ -45,8 +45,21 @@ const accessLogStream = rfs.createStream("access.log", {
   path: logDirectory,
 });
 
+// Define a custom token for Morgan
+morgan.token("user-email", function (req) {
+  // Check if the user object and email exist on the request object
+  return req.user ? req.user.email : "guest";
+});
+
+// Custom log format including user email
+const logFormat =
+  '[:date[clf]] - :remote-addr - :user-email - ":method :url HTTP/:http-version" - :status - :response-time ms - :res[content-length] - ":referrer" - ":user-agent"';
+
 // Morgan setup to write to file/render disk
-app.use(morgan("combined", { stream: accessLogStream }));
+app.use(morgan(logFormat, { stream: accessLogStream }));
+
+// Use the client app
+app.use(express.static(path.join(__dirname, "/client/build")));
 
 // Login Route
 const { loginUser } = require("./controllers/userController");
@@ -63,9 +76,6 @@ app.use("/api/student", requireRoleAuth(["student", "admin"]), studentRoutes);
 
 // Global routes accessible by admin, presenter, and student
 app.use("/api/global", requireRoleAuth(["student", "presenter", "admin"]), globalRoutes);
-
-// Use the client app
-app.use(express.static(path.join(__dirname, "/client/build")));
 
 // Render client for any path
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "/client/build/index.html")));
