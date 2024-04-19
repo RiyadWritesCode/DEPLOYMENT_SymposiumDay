@@ -29,11 +29,11 @@
 }
 
 .leftAllClassesView {
-  width: 45%;
+  width: 55%;
 }
 
 .rightAllClassesView {
-  width: 55%;
+  width: 45%;
 }
 
 @media (max-width: 800px) {
@@ -52,12 +52,16 @@
 
 /* ALL CLASSES */
 
+.classContainer {
+  height: 800px;
+  overflow: scroll;
+}
+
 .class {
-  margin-left: 4px;
+  margin: 20px 0 20px 4px;
   border-left: 3px solid #ea9010;
   padding: 10px 24px 10px 16px;
 }
-
 .class p {
   margin: 5px 0;
   font-size: 18px;
