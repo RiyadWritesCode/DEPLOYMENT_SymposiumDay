@@ -37,7 +37,7 @@ const classSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 150,
+      maxlength: 1000,
     },
     room: {
       type: String,
