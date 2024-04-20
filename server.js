@@ -1,94 +1,131 @@
-// To access .env variables (sensitive data)
 require("dotenv").config();
-
-// Import express, web application framework for nodejs
 const express = require("express");
-// Import mongoose library to access MongoDB
 const mongoose = require("mongoose");
-// HTTP request logger middleware for nodejs
 const morgan = require("morgan");
 const rfs = require("rotating-file-stream");
 const fs = require("fs");
-
-const { requireRoleAuth } = require("./middleware/requireRoleAuth");
-
-// Registering routes
-const adminRoutes = require("./routes/admin");
-const studentRoutes = require("./routes/student");
-const presenterRoutes = require("./routes/presenter");
-const globalRoutes = require("./routes/global");
-
-// Resolving dirname for ES module
 const path = require("path");
+const rateLimit = require("express-rate-limit");
 
-// Initialize express app
 const app = express();
 
-// Middleware required to parse JSON bodies (access via req.body)
-app.use(express.json({ limit: "200kb" }));
-
-// Morgan dev preset
-app.use(morgan("dev"));
-
-// Logging to disk
-// const logDirectory = path.join(__dirname, "var/log");
 const logDirectory = "/var/log";
-
 // Ensure the directory exists, create it if it doesn't
 if (!fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory, { recursive: true });
 }
 
-// Create a rotating write stream
+// Set up rotating logs
 const accessLogStream = rfs.createStream("access.log", {
   interval: "1d", // rotate daily
   path: logDirectory,
 });
 
-// Define a custom token for Morgan
+// Custom Morgan token to log user email
 morgan.token("user-email", function (req) {
-  // Check if the user object and email exist on the request object
   return req.user ? req.user.email : "guest";
 });
-
-// Custom log format including user email
 const logFormat =
   '[:date[clf]] - :remote-addr - :user-email - ":method :url HTTP/:http-version" - :status - :response-time ms - :res[content-length] - ":referrer" - ":user-agent"';
-
-// Morgan setup to write to file/render disk
 app.use(morgan(logFormat, { stream: accessLogStream }));
 
-// Use the client app
+// Dev logs
+app.use(morgan("dev"));
+
+// Set JSON limit
+app.use(express.json({ limit: "200kb" }));
+
+const userLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 500, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: {
+    message: "Too many requests from this IP, please try again after 5 minutes",
+    code: 429, // Optional: you might want to include a specific error code
+  },
+});
+
+const adminLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 15 minutes
+  max: 5000, // limit each IP to 500 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: {
+    message: "Too many requests from this IP, please try again after 5 minutes",
+    code: 429, // Optional: you might want to include a specific error code
+  },
+});
+
+// Serve static files
 app.use(express.static(path.join(__dirname, "/client/build")));
+const { requireRoleAuth } = require("./middleware/requireRoleAuth");
+
+// Route definitions
+const adminRoutes = require("./routes/admin");
+const studentRoutes = require("./routes/student");
+const presenterRoutes = require("./routes/presenter");
+const globalRoutes = require("./routes/global");
+
+// Apply general rate limiter
+app.use(userLimiter);
 
 // Login Route
 const { loginUser } = require("./controllers/userController");
 app.post("/api/login", loginUser);
 
-// Admin routes
-app.use("/api/admin", requireRoleAuth(["admin"]), adminRoutes);
-
-// Presenter routes
+// Apply specific limiters to specific routes
+app.use("/api/admin", adminLimiter, requireRoleAuth(["admin"]), adminRoutes);
 app.use("/api/presenter", requireRoleAuth(["presenter", "admin"]), presenterRoutes);
-
-// Student routes
 app.use("/api/student", requireRoleAuth(["student", "admin"]), studentRoutes);
-
-// Global routes accessible by admin, presenter, and student
 app.use("/api/global", requireRoleAuth(["student", "presenter", "admin"]), globalRoutes);
 
-// Render client for any path
-app.get("*", (req, res) => res.sendFile(path.join(__dirname, "/client/build/index.html")));
+// Fallback route to serve client-side application
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/client/build/index.html"));
+});
 
-// Connect to DB
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
+// Database and server start
+
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    // Start express server
-    app.listen(process.env.PORT, () => {
-      console.log("Listening on port: " + process.env.PORT);
-    });
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    socketTimeoutMS: 360000, // Close sockets after 6 minutes of inactivity
+    connectTimeoutMS: 30000, // Connection timeout after 30 seconds
   })
   .catch((error) => {
-    console.log(error);
+    console.log("Failed to connect to MongoDB:", error);
   });
+
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Listening on port: ${process.env.PORT}`);
+});
+
+// Connections
+const db = mongoose.connection;
+db.on("connected", () => console.log("Connected to MongoDB"));
+db.on("error", (err) => console.error("MongoDB connection error:", err));
+db.on("disconnected", () => console.log("Disconnected from MongoDB"));
+db.on("reconnected", () => console.log("Reconnected to MongoDB"));
+db.on("timeout", (err) => console.log("MongoDB connection timeout:", err));
+
+function gracefulShutdown() {
+  console.log("Shutting down gracefully...");
+  server.close(() => {
+    console.log("HTTP server closed.");
+    mongoose.connection.close(false, () => {
+      console.log("MongoDB connection closed.");
+      process.exit(0);
+    });
+  });
+}
+
+process.on("SIGINT", gracefulShutdown);
+process.on("SIGTERM", gracefulShutdown);
