@@ -50,11 +50,15 @@ const AllClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setSymposiums(json);
-        setIsFetching(false);
-      }
-      if (response.status === 401) {
+      } else if (response.status === 429) {
+        alert(json.message); // Set rate limit error message
+      } else if (response.status === 401) {
         logout();
+      } else {
+        alert(json.error || "An unexpected error occurred");
       }
+
+      setIsFetching(false);
     };
     fetchSymposiums();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,10 +78,18 @@ const AllClassesView = ({ filterBlock }) => {
       if (response.ok) {
         setAllClasses(json);
         setSymposium(symposiums.find((s) => s._id === symposiumFilter));
-        setIsFetching(false);
+      } else if (response.status === 429) {
+        alert(json.message);
+      } else if (response.status === 401) {
+        logout();
+      } else {
+        alert(json.error || "An unexpected error occurred");
       }
+
+      setIsFetching(false);
     };
     fetchClasses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symposiumFilter, symposiums, user.token]);
 
   return (

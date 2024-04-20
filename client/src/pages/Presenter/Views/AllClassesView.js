@@ -144,11 +144,15 @@ const AllClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setSymposiums(json);
-        setIsFetching(false);
-      }
-      if (response.status === 401) {
+      } else if (response.status === 429) {
+        alert(json.message);
+      } else if (response.status === 401) {
         logout();
+      } else {
+        alert(json.error || "An unexpected error occurred");
       }
+
+      setIsFetching(false);
     };
     fetchSymposiums();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,13 +170,19 @@ const AllClassesView = ({ filterBlock }) => {
       const json = await response.json();
       if (response.ok) {
         setSymposium(json);
-        setIsFetching(false);
+      } else if (response.status === 429) {
+        alert(json.message);
+      } else if (response.status === 401) {
+        logout();
+      } else {
+        alert(json.error || "An unexpected error occurred");
       }
-      if (!response.ok) {
-        console.log(json.error);
-      }
+
+      setIsFetching(false);
     };
     fetchSymposium();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symposiumIdForFetch, user.token]);
 
   useEffect(() => {
@@ -188,10 +198,17 @@ const AllClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setAllClasses(json);
-        setIsFetching(false);
+      } else if (response.status === 429) {
+        alert(json.message);
+      } else if (response.status === 401) {
+        logout();
+      } else {
+        alert(json.error || "An unexpected error occurred");
       }
+      setIsFetching(false);
     };
     fetchClasses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symposiumFilter, user.token]);
 
   return (

@@ -88,10 +88,17 @@ const MyClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setSymposiums(json);
-        setIsFetching(false);
+      } else if (response.status === 429) {
+        alert(json.message);
+      } else if (response.status === 401) {
+        logout();
+      } else {
+        alert(json.error || "An unexpected error occurred");
       }
+      setIsFetching(false);
     };
     fetchSymposiums();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
@@ -124,12 +131,15 @@ const MyClassesView = ({ filterBlock }) => {
 
         // Update the attendance state with the newly constructed object
         setAttendance(initialAttendanceState);
-        setIsFetchingAttendance(false);
-        setIsFetching(false);
-      }
-      if (response.status === 401) {
+      } else if (response.status === 429) {
+        alert(json.message);
+      } else if (response.status === 401) {
         logout();
+      } else {
+        alert(json.error || "An unexpected error occurred");
       }
+      setIsFetchingAttendance(false);
+      setIsFetching(false);
     };
     fetchClasses();
 
