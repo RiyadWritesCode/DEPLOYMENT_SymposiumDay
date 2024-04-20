@@ -37,7 +37,7 @@ app.use(express.json({ limit: "200kb" }));
 
 const userLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 500, // limit each IP to 100 requests per windowMs
+  max: 500, // limit each IP to 500 requests per windowMs
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
@@ -48,7 +48,7 @@ const userLimiter = rateLimit({
 
 const adminLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 15 minutes
-  max: 5000, // limit each IP to 500 requests per windowMs
+  max: 5000, // limit each IP to 5000 requests per windowMs
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
@@ -95,8 +95,6 @@ app.use((err, req, res, next) => {
 
 mongoose
   .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     socketTimeoutMS: 360000, // Close sockets after 6 minutes of inactivity
     connectTimeoutMS: 30000, // Connection timeout after 30 seconds
   })

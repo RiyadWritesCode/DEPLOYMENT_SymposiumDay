@@ -14,6 +14,8 @@ const StudentView = () => {
   const { logout } = useLogout();
   const [users, setUsers] = useState([]);
 
+  const [showUserPasswords, setShowUserPasswords] = useState(false);
+
   const gradeOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
   const [isFetching, setIsFetching] = useState(true);
@@ -34,6 +36,10 @@ const StudentView = () => {
   const [file, setFile] = useState(null);
   const [fileInputKey, setFileInputKey] = useState(Date.now());
   const [fileUploadHelp, setFileUploadHelp] = useState(false);
+
+  const toggleShowUserPasswords = () => {
+    setShowUserPasswords(!showUserPasswords);
+  };
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -328,7 +334,7 @@ const StudentView = () => {
             <strong>Email:</strong> {student.email}
           </p>
           <p>
-            <strong>Password:</strong> {student.password}
+            <strong>Password:</strong> {showUserPasswords ? student.password : "********"}
           </p>
           <p>
             <strong>Gender:</strong> {student.gender}
@@ -369,12 +375,21 @@ const StudentView = () => {
   return (
     <div className={styles.container}>
       <div className={`${styles.leftStudentView} ${sidebar.box}`}>
-        <h2 className={forms.h2}>
-          All Students ({isFetching ? "Loading..." : filteredUsers.length}):
-        </h2>
-        <button className={forms.smallButton} onClick={handleExcelExport}>
-          Export to Excel
-        </button>
+        <div className={styles.headerContainer}>
+          <h2 className={forms.h2}>
+            All Students ({isFetching ? "Loading..." : filteredUsers.length}):
+          </h2>
+          <button className={forms.smallButton} onClick={handleExcelExport}>
+            Export to Excel
+          </button>
+        </div>
+        <p
+          className={forms.fileInputHelp}
+          onClick={toggleShowUserPasswords}
+          style={{ marginTop: 0 }}
+        >
+          {showUserPasswords ? "Hide Passwords" : "Show Passwords"}
+        </p>
         <div className={forms.textInputGroup}>
           <input
             type="text"

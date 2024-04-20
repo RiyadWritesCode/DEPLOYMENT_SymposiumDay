@@ -99,7 +99,6 @@ const leaveClass = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such class" });
   }
-  console.log(student);
 
   if (student.userType !== "student") {
     return res.status(400).json({ error: "It is only possible to leave classes as a student!" });
@@ -271,7 +270,7 @@ const getClass = async (req, res) => {
     const thisClass = await Class.findById(id)
       .populate({
         path: "students.student_id",
-        select: "firstName lastName",
+        select: "firstName lastName grade gender email",
       })
       .populate("presenter_id", "firstName lastName")
       .lean();

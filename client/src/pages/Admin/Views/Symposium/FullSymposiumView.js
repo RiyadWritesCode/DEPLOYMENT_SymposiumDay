@@ -601,9 +601,6 @@ const FullSymposiumView = () => {
             Email: <strong>{presenter.email}</strong>
           </p>
           <p>
-            Password: <strong>{presenter.password}</strong>
-          </p>
-          <p>
             Created Classes:{" "}
             <strong>{classes.filter((c) => c.presenter_id._id === presenter._id).length}</strong>
           </p>
@@ -742,9 +739,6 @@ const FullSymposiumView = () => {
 
           <p>
             Email: <strong>{student.email}</strong>
-          </p>
-          <p>
-            Password: <strong>{student.password}</strong>
           </p>
           <p>
             Grade: <strong>{student.grade}</strong>
@@ -1591,7 +1585,7 @@ const FullSymposiumView = () => {
             <List
               height={filteredPresenters.length === 0 ? 100 : 500} // Adjust based on your layout
               itemCount={filteredPresenters.length}
-              itemSize={125}
+              itemSize={100}
               width={"100%"}
               itemData={filteredPresenters} // Pass filteredUsers as itemData
             >
@@ -1824,7 +1818,7 @@ const FullSymposiumView = () => {
               <List
                 height={filteredStudents.length === 0 ? 100 : 400} // Adjust based on your layout
                 itemCount={filteredStudents.length}
-                itemSize={180}
+                itemSize={150}
                 width={"100%"}
                 itemData={filteredStudents} // Pass filteredUsers as itemData
               >

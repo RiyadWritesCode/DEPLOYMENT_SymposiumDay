@@ -6,6 +6,12 @@
   align-items: flex-start; /* Add this line if the container is causing the issue */
 }
 
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .leftPresenterView,
 .rightPresenterView {
   padding: 16px 24px;

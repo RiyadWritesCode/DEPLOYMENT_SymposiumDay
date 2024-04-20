@@ -14,6 +14,8 @@ const PresenterView = () => {
   const { logout } = useLogout();
   const [users, setUsers] = useState([]);
 
+  const [showUserPasswords, setShowUserPasswords] = useState(false);
+
   const [isFetching, setIsFetching] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -29,6 +31,10 @@ const PresenterView = () => {
   const [file, setFile] = useState(null);
   const [fileInputKey, setFileInputKey] = useState(Date.now());
   const [fileUploadHelp, setFileUploadHelp] = useState(false);
+
+  const toggleShowUserPasswords = () => {
+    setShowUserPasswords(!showUserPasswords);
+  };
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -286,7 +292,7 @@ const PresenterView = () => {
             <strong>Email:</strong> {presenter.email}
           </p>
           <p>
-            <strong>Password:</strong> {presenter.password}
+            <strong>Password:</strong> {showUserPasswords ? presenter.password : "********"}
           </p>
         </div>
       </div>
@@ -321,12 +327,21 @@ const PresenterView = () => {
     <div>
       <div className={styles.container}>
         <div className={`${styles.leftPresenterView} ${sidebar.box}`}>
-          <h2 className={forms.h2}>
-            All Presenters ({isFetching ? "Loading..." : filteredUsers.length}):
-          </h2>
-          <button className={forms.smallButton} onClick={handleExcelExport}>
-            Export to Excel
-          </button>
+          <div className={styles.headerContainer}>
+            <h2 className={forms.h2}>
+              All Presenters ({isFetching ? "Loading..." : filteredUsers.length}):
+            </h2>
+            <button className={forms.smallButton} onClick={handleExcelExport}>
+              Export to Excel
+            </button>
+          </div>
+          <p
+            className={forms.fileInputHelp}
+            onClick={toggleShowUserPasswords}
+            style={{ marginTop: 0 }}
+          >
+            {showUserPasswords ? "Hide Passwords" : "Show Passwords"}
+          </p>
           <div className={forms.textInputGroup}>
             <input
               type="text"

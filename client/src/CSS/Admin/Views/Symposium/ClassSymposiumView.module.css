@@ -24,6 +24,7 @@
 /* CLASS */
 .classContainer {
   padding: 16px 24px;
+  margin-bottom: 20px;
 }
 
 .class {
@@ -100,4 +101,39 @@
 .presentSelected {
   background: #1ea270;
   color: #fbfffe;
+}
+
+/* STUDENT LIST */
+.studentContainer {
+  padding: 16px 24px;
+  margin-bottom: 20px;
+}
+
+.studentName {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  display: block;
+  cursor: pointer;
+  color: #1b1b1e;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.student {
+  margin: 0 auto 20px;
+  border-left: 3px solid #ea9010;
+  padding: 5px 0 5px 16px;
+}
+
+.student p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+.studentHeader {
+  position: relative; /* This will be the positioning context for the absolute delete icon */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 30px;
 }
