@@ -4,6 +4,7 @@ import styles from "../../../CSS/Presenter/Views/AllClassesView.module.css";
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import { useLogout } from "../../../hooks/useLogout";
+import { Link } from "react-router-dom";
 
 const AllClassesView = ({ filterBlock }) => {
   const { user } = useAuthContext();
@@ -261,47 +262,61 @@ const AllClassesView = ({ filterBlock }) => {
             return (
               <div className={styles.class} key={thisClass._id}>
                 <div className={styles.classHeader}>
-                  <h3>
-                    <span className={styles.classColor}>{thisClass.name}</span> by{" "}
-                    <span className={styles.presenterColor}>
-                      {thisClass.presenterFirstName} {thisClass.presenterLastName}
-                    </span>
-                  </h3>
-                  {thisClass.presenter_id._id === user._id && (
-                    <button
-                      className={forms.deleteIcon}
-                      onClick={async () => {
-                        const isConfirmed = window.confirm(
-                          "Are you sure you want to delete this class?"
-                        );
-                        if (isConfirmed) {
-                          setIsFetching(true);
-                          const response = await fetch("/api/presenter/classes/" + thisClass._id, {
-                            method: "DELETE",
-                            headers: {
-                              Authorization: `Bearer ${user.token}`,
-                            },
-                          });
+                  {thisClass.presenter_id._id === user._id ? (
+                    <div>
+                      <h3>
+                        <Link to={`/presenter/${thisClass._id}/edit`} className={styles.className}>
+                          <span className={styles.classColor}>{thisClass.name}</span> by{" "}
+                          <span className={styles.presenterColor}>
+                            {thisClass.presenterFirstName} {thisClass.presenterLastName}
+                          </span>
+                        </Link>
+                      </h3>
+                      <button
+                        className={forms.deleteIcon}
+                        onClick={async () => {
+                          const isConfirmed = window.confirm(
+                            "Are you sure you want to delete this class?"
+                          );
+                          if (isConfirmed) {
+                            setIsFetching(true);
+                            const response = await fetch(
+                              "/api/presenter/classes/" + thisClass._id,
+                              {
+                                method: "DELETE",
+                                headers: {
+                                  Authorization: `Bearer ${user.token}`,
+                                },
+                              }
+                            );
 
-                          const json = await response.json();
-                          if (response.ok) {
-                            setAllClasses(allClasses.filter((c) => c._id !== json._id));
-                            setIsFetching(false);
+                            const json = await response.json();
+                            if (response.ok) {
+                              setAllClasses(allClasses.filter((c) => c._id !== json._id));
+                              setIsFetching(false);
+                            }
+                            if (!response.ok) {
+                              alert(json.error);
+                              setIsFetching(false);
+                            }
                           }
-                          if (!response.ok) {
-                            alert(json.error);
-                            setIsFetching(false);
-                          }
-                        }
-                      }}
-                      disabled={isFetching}
-                    >
-                      {isFetching ? (
-                        <div className={forms.smallRedSpinner}></div>
-                      ) : (
-                        <span className="material-symbols-outlined">delete</span>
-                      )}{" "}
-                    </button>
+                        }}
+                        disabled={isFetching}
+                      >
+                        {isFetching ? (
+                          <div className={forms.smallRedSpinner}></div>
+                        ) : (
+                          <span className="material-symbols-outlined">delete</span>
+                        )}{" "}
+                      </button>{" "}
+                    </div>
+                  ) : (
+                    <h3>
+                      <span className={styles.classColor}>{thisClass.name}</span> by{" "}
+                      <span className={styles.presenterColor}>
+                        {thisClass.presenterFirstName} {thisClass.presenterLastName}
+                      </span>
+                    </h3>
                   )}
                 </div>
                 <p>

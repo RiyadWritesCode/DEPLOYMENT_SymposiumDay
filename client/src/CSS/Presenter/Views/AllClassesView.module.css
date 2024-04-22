@@ -67,6 +67,15 @@
   font-size: 18px;
   overflow-wrap: break-word;
 }
+.className {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 700;
+  text-decoration: underline;
+  color: #1b1b1e;
+}
 
 .classHeader {
   position: relative; /* This will be the positioning context for the absolute delete icon */
