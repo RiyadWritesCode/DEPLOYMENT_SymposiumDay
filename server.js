@@ -68,6 +68,9 @@ const studentRoutes = require("./routes/student");
 const presenterRoutes = require("./routes/presenter");
 const globalRoutes = require("./routes/global");
 
+app.set("trust proxy", 1);
+app.get("/ip", (request, response) => response.send(request.ip));
+
 // Apply general rate limiter
 app.use(userLimiter);
 
