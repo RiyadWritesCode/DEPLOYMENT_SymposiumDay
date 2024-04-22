@@ -1485,6 +1485,7 @@ const FullSymposiumView = () => {
                   <li>
                     <a
                       href="https://docs.google.com/spreadsheets/d/1-brMvgqolKPuV6IsmTaTxZCMSEat-hdKMUNUlITtGMM/edit?usp=sharing"
+                      target="_blank"
                       rel="noreferrer"
                     >
                       Follow this exact format

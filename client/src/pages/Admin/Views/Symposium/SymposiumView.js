@@ -75,7 +75,6 @@ const SymposiumView = () => {
             <Link
               to={`/admin/symposiums/${symposium._id}`}
               className={styles.symposiumName}
-              target="_blank"
             >{`${symposium.name}\u00A0\u00A0|\u00A0\u00A0${symposium.date}`}</Link>
 
             <button
