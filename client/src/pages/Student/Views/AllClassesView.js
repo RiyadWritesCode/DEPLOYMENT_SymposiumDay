@@ -38,6 +38,30 @@ const AllClassesView = ({ filterBlock }) => {
     return matchesSearchQuery && matchesBlockFilter && matchesSymposiumFilter;
   });
 
+  const fetchClasses = async () => {
+    if (!symposiumFilter) return;
+    setIsFetching(true);
+    const response = await fetch(`/api/global/symposiums/${symposiumFilter}/classes`, {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
+    const json = await response.json();
+
+    if (response.ok) {
+      setAllClasses(json);
+      setSymposium(symposiums.find((s) => s._id === symposiumFilter));
+    } else if (response.status === 429) {
+      alert(json.message);
+    } else if (response.status === 401) {
+      logout();
+    } else {
+      alert(json.error || "An unexpected error occurred");
+    }
+
+    setIsFetching(false);
+  };
+
   useEffect(() => {
     setIsFetching(true);
     const fetchSymposiums = async () => {
@@ -65,29 +89,6 @@ const AllClassesView = ({ filterBlock }) => {
   }, [user]);
 
   useEffect(() => {
-    if (!symposiumFilter) return;
-    setIsFetching(true);
-    const fetchClasses = async () => {
-      const response = await fetch(`/api/global/symposiums/${symposiumFilter}/classes`, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      const json = await response.json();
-
-      if (response.ok) {
-        setAllClasses(json);
-        setSymposium(symposiums.find((s) => s._id === symposiumFilter));
-      } else if (response.status === 429) {
-        alert(json.message);
-      } else if (response.status === 401) {
-        logout();
-      } else {
-        alert(json.error || "An unexpected error occurred");
-      }
-
-      setIsFetching(false);
-    };
     fetchClasses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symposiumFilter, symposiums, user.token]);
@@ -98,9 +99,13 @@ const AllClassesView = ({ filterBlock }) => {
         <h2 className={forms.h2}>
           All Classes ({isFetching ? "Loading..." : filteredClasses.length}):
         </h2>
+
         {filterBlock && <p>Filtering by Block #{filterBlock}</p>}
         {!filterBlock && <p>Not Filtering</p>}
       </div>
+      <button onClick={fetchClasses} disabled={isFetching} className={forms.smallButton}>
+        {isFetching ? <div className={forms.spinner}></div> : "Refresh Classes"}
+      </button>
       <select
         value={symposiumFilter || ""}
         onChange={handleSymposiumFilterChange}
