@@ -90,8 +90,8 @@ classSchema.statics.createClass = async function (
   }
 
   // Ensure maximum students is within allowed range
-  if (maxStudents <= 0 || maxStudents > 50) {
-    throw new Error("Maximum students must be between 1 and 50");
+  if (maxStudents <= 0 || maxStudents >= 200) {
+    throw new Error("Maximum students must be between 1 and 200");
   }
 
   // Validate name and description lengths

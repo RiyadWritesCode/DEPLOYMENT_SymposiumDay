@@ -11,7 +11,7 @@ const AllClassesView = ({ filterBlock }) => {
   const [symposiums, setSymposiums] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
 
-  const maxStudentsOptions = Array.from({ length: 50 }, (_, i) => i + 1);
+  const maxStudentsOptions = Array.from({ length: 200 }, (_, i) => i + 1);
 
   const [isFetching, setIsFetching] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
