@@ -5,7 +5,9 @@ import forms from "./CSS/Components/Forms.module.css";
 import Login from "./pages/Login.js";
 import Home from "./pages/Home.js";
 import Admin from "./pages/Admin/Admin.js";
+import EditClass from "./pages/Presenter/EditClass.js";
 
+// ADMIN PAGES
 import FullSymposiumView from "./pages/Admin/Views/Symposium/FullSymposiumView.js";
 import PresenterSymposiumView from "./pages/Admin/Views/Symposium/PresenterSymposiumView.js";
 import StudentSymposiumView from "./pages/Admin/Views/Symposium/StudentSymposiumView.js";
@@ -13,8 +15,10 @@ import ClassSymposiumView from "./pages/Admin/Views/Symposium/ClassSymposiumView
 import FullPresenterView from "./pages/Admin/Views/Presenter/FullPresenterView.js";
 import FullStudentView from "./pages/Admin/Views/Student/FullStudentView.js";
 
+// PRESENTER PAGES
 import Presenter from "./pages/Presenter/Presenter.js";
 
+// STUDENT PAGES
 import Student from "./pages/Student/Student.js";
 
 function App() {
@@ -49,6 +53,10 @@ function App() {
             path="/admin/symposiums/:symposium_id/class/:class_id"
             element={user ? <ClassSymposiumView /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/admin/symposiums/:symposium_id/class/:class_id/edit"
+            element={user ? <EditClass /> : <Navigate to="/login" />}
+          />
           {/* STUDENT VIEW */}
           <Route
             path="/admin/students/:id"
@@ -59,9 +67,14 @@ function App() {
             path="/admin/presenters/:id"
             element={user ? <FullPresenterView /> : <Navigate to="/login" />}
           />
+          <Route path="/admin/:id/edit" element={user ? <EditClass /> : <Navigate to="/login" />} />
           <Route path="/admin/*" element={user ? <Admin /> : <Navigate to="/login" />} />
 
           {/* PRESENTER ROUTES */}
+          <Route
+            path="/presenter/:id/edit"
+            element={user ? <EditClass /> : <Navigate to="/login" />}
+          />
           <Route path="/presenter/*" element={user ? <Presenter /> : <Navigate to="/login" />} />
 
           {/* STUDENT ROUTES */}

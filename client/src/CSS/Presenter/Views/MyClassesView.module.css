@@ -37,6 +37,16 @@
   padding: 10px 24px 10px 16px;
 }
 
+.className {
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 700;
+  text-decoration: underline;
+  color: #1b1b1e;
+}
+
 .class p {
   margin: 5px 0;
   font-size: 18px;

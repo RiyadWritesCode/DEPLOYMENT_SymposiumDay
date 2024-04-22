@@ -376,6 +376,44 @@ const createClass = async (req, res) => {
   }
 };
 
+const updateClass = async (req, res) => {
+  const { name, block, maxStudents, shortDescription, room, gender } = req.body;
+  const { id } = req.params;
+
+  // Validate the provided class ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "Invalid class ID" });
+  }
+
+  try {
+    // Fetch the existing class to retrieve the presenter_id and symposium_id
+    const existingClass = await Class.findById(id);
+    if (!existingClass) {
+      return res.status(404).json({ error: "Class not found" });
+    }
+
+    const presenter_id = existingClass.presenter_id;
+    const symposium_id = existingClass.symposium_id;
+
+    // Perform the update with all required parameters
+    const updatedClass = await Class.updateClass(
+      id,
+      name,
+      block,
+      maxStudents,
+      shortDescription,
+      room,
+      gender,
+      presenter_id,
+      symposium_id
+    );
+
+    res.status(200).json(updatedClass);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   updateClassAttendance,
   getClasses,
@@ -386,4 +424,5 @@ module.exports = {
   leaveClass,
   getSymposiumJoinedClasses,
   getSymposiumCreatedClasses,
+  updateClass,
 };

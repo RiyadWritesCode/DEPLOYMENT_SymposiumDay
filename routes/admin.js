@@ -30,8 +30,6 @@ const {
   sendScheduleToStudents,
 } = require("../controllers/symposiumController");
 
-const { getClass } = require("../controllers/classController");
-
 const router = express.Router();
 
 // User routes
@@ -57,7 +55,6 @@ router.delete("/symposiums/:id/users/removeWithEmails", removeUsersFromSymposium
 router.delete("/symposiums/:id/users/:user_id", removeUserFromSymposium);
 router.post("/symposiums/:id/students/addByGrade", addStudentsToSymposiumByGrade);
 router.delete("/symposiums/:id/students/removeByGrade", removeStudentsFromSymposiumByGrade);
-router.get("/symposiums/:symposium_id/classes/:id", getClass);
 router.patch("/symposiums/:symposium_id/fill", fillAvailableSpaces);
 router.get("/symposiums/:id/send-schedule-to-presenters", sendScheduleToPresenters);
 router.get("/symposiums/:id/send-schedule-to-students", sendScheduleToStudents);

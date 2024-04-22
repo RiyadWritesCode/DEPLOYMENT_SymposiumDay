@@ -104,8 +104,8 @@ classSchema.statics.createClass = async function (
   }
 
   // Validate room length
-  if (room.length < 3 || room.length > 10) {
-    throw new Error("Classroom must be between 3 and 10 characters long");
+  if (room.length < 3 || room.length > 20) {
+    throw new Error("Classroom must be between 3 and 25 characters long");
   }
 
   if (!["all", "male", "female"].includes(gender)) {
@@ -205,6 +205,116 @@ classSchema.statics.createClass = async function (
     }
   }
 };
+
+classSchema.statics.updateClass = async function (
+  class_id,
+  name,
+  block,
+  maxStudents,
+  shortDescription,
+  room,
+  gender,
+  presenter_id, // Added presenter_id parameter to check against symposium presenters
+  symposium_id
+) {
+  // Ensure all fields are provided
+  if (
+    !name ||
+    !block ||
+    !maxStudents ||
+    !shortDescription ||
+    !room ||
+    !gender ||
+    !symposium_id ||
+    !class_id ||
+    !presenter_id
+  ) {
+    throw new Error("All fields must be filled");
+  }
+
+  // Ensure maximum students is within allowed range
+  if (maxStudents < 1 || maxStudents > 200) {
+    throw new Error("Maximum students must be between 1 and 200");
+  }
+
+  // Validate name and description lengths
+  if (name.length < 4 || name.length > 100) {
+    throw new Error("Class name must be between 4 and 100 characters long");
+  }
+  if (shortDescription.length < 10 || shortDescription.length > 1500) {
+    throw new Error("Short description must be between 10 and 1500 characters long");
+  }
+
+  // Validate room length
+  if (room.length < 3 || room.length > 20) {
+    // Corrected upper limit for room length
+    throw new Error("Classroom must be between 3 and 20 characters long");
+  }
+
+  if (!["all", "male", "female"].includes(gender)) {
+    throw new Error("Gender must be all, male, or female.");
+  }
+
+  // Check if the presenter is listed in the symposium
+  const symposium = await mongoose.model("Symposium").findById(symposium_id).lean();
+  if (!symposium) {
+    throw new Error("Specified symposium not found");
+  }
+  if (!symposium.presenters.some((id) => id.equals(presenter_id))) {
+    throw new Error("Presenter is not listed in the specified symposium");
+  }
+  if (symposium.permissions.presentersCreatingClasses === false) {
+    throw new Error("The admin has locked presenters from creating classes for this symposium.");
+  }
+
+  /// Check if presenter has another class in the same block within any symposium on the same date
+  const symposiumsOnSameDate = await mongoose.model("Symposium").find({ date: symposium.date });
+
+  for (const otherSymposium of symposiumsOnSameDate) {
+    const existingClassInBlock = await this.findOne({
+      block,
+      presenter_id,
+      symposium_id: otherSymposium._id,
+      _id: { $ne: class_id }, // Exclude the current class from this check
+    });
+
+    if (existingClassInBlock) {
+      const presenter = await mongoose.model("User").findById(presenter_id);
+      throw new Error(
+        `Presenter with email ${presenter.email} already has a class in block ${block} for a symposium on ${symposium.date}`
+      );
+    }
+  }
+
+  // Check for class name uniqueness within the symposium and block, excluding current class
+  const existingClassWithName = await this.findOne({
+    name,
+    block,
+    symposium_id,
+    _id: { $ne: class_id }, // Exclude the current class
+  });
+
+  if (existingClassWithName) {
+    throw new Error(
+      `Another class named "${name}" already exists in block ${block} for this symposium.`
+    );
+  }
+
+  // Update the class
+  const updates = { name, block, maxStudents, shortDescription, room, gender };
+  const updatedClass = await this.findOneAndUpdate(
+    { _id: class_id, symposium_id: symposium_id, presenter_id: presenter_id },
+    updates,
+    { new: true }
+  );
+
+  if (!updatedClass) {
+    throw new Error("Class not found or user not authorized to update this class.");
+  }
+
+  return updatedClass;
+};
+
 classSchema.statics.deleteClass = async function (class_id, user, session = null) {
   let deletedClass = null;
 

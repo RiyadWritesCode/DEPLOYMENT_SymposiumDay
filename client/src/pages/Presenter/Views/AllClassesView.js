@@ -29,9 +29,9 @@ const AllClassesView = ({ filterBlock }) => {
   const [maxStudents, setMaxStudents] = useState(0);
   const [shortDescription, setShortDescription] = useState("");
 
-  const maxClassNameChars = 25;
-  const maxClassroomChars = 10;
-  const maxShortDescriptionChars = 150;
+  const maxClassNameChars = 100;
+  const maxClassroomChars = 20;
+  const maxShortDescriptionChars = 1500;
   const [classNameChars, setClassNameChars] = useState(0);
   const [classroomChars, setClassroomChars] = useState(0);
   const [shortDescriptionChars, setShortDescriptionChars] = useState(0);
@@ -43,15 +43,6 @@ const AllClassesView = ({ filterBlock }) => {
   const handleSymposiumChange = (event) => {
     setSymposiumIdForFetch(event.target.value);
   };
-  const handleClassNameChange = (event) => {
-    setClassName(event.target.value);
-    setClassNameChars(event.target.value.length);
-  };
-
-  const handleClassroomChange = (event) => {
-    setClassroom(event.target.value);
-    setClassroomChars(event.target.value.length);
-  };
 
   const handleBlocksChange = (event) => {
     const blockNum = Number(event.target.value);
@@ -61,7 +52,15 @@ const AllClassesView = ({ filterBlock }) => {
       setBlocks([...blocks, blockNum]);
     }
   };
+  const handleClassNameChange = (event) => {
+    setClassName(event.target.value);
+    setClassNameChars(event.target.value.length);
+  };
 
+  const handleClassroomChange = (event) => {
+    setClassroom(event.target.value);
+    setClassroomChars(event.target.value.length);
+  };
   const handleGenderChange = (event) => {
     setGender(event.target.value);
   };
@@ -359,7 +358,7 @@ const AllClassesView = ({ filterBlock }) => {
               type="text"
               value={className}
               onChange={handleClassNameChange}
-              placeholder=""
+              placeholder="Enter a class name..."
             />
             <p className={forms.textInputChars}>
               {classNameChars}/{maxClassNameChars}
@@ -374,6 +373,7 @@ const AllClassesView = ({ filterBlock }) => {
               type="text"
               value={classroom}
               onChange={handleClassroomChange}
+              placeholder="Enter a class room..."
             />
             <p className={forms.textInputChars}>
               {classroomChars}/{maxClassroomChars}
@@ -462,7 +462,8 @@ const AllClassesView = ({ filterBlock }) => {
               type="text"
               value={shortDescription}
               onChange={handleShortDescriptionChange}
-              rows="3"
+              rows="6"
+              placeholder="Enter a short description..."
             />
             <p className={forms.textareaInputChars}>
               {shortDescriptionChars}/{maxShortDescriptionChars}

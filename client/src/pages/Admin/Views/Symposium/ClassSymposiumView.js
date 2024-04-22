@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { useAuthContext } from "../../../../hooks/useAuthContext";
 import Navbar from "../../../../components/Navbar";
 import { FixedSizeList as List } from "react-window";
+import { Link } from "react-router-dom";
 
 const ClassSymposiumView = () => {
   const { symposium_id, class_id } = useParams();
@@ -95,14 +96,11 @@ const ClassSymposiumView = () => {
         const symposiumJson = await symposiumResponse.json();
         if (!symposiumResponse.ok) throw new Error(symposiumJson.error);
 
-        const classResponse = await fetch(
-          `/api/admin/symposiums/${symposium_id}/classes/${class_id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
+        const classResponse = await fetch(`/api/presenter/classes/${class_id}`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
         const classJson = await classResponse.json();
         if (!classResponse.ok) throw new Error(classJson.error);
 
@@ -153,10 +151,12 @@ const ClassSymposiumView = () => {
             <div className={styles.class}>
               <div className={styles.classHeader}>
                 <h3>
-                  <span className={styles.classColor}>{cls.name}</span> by{" "}
-                  <span className={styles.presenterColor}>
-                    {cls.presenter_id.firstName} {cls.presenterLastName}
-                  </span>
+                  <Link to={`/admin/${cls._id}/edit`} className={styles.className}>
+                    <span className={styles.classColor}>{cls.name}</span> by{" "}
+                    <span className={styles.presenterColor}>
+                      {cls.presenter_id.firstName} {cls.presenterLastName}
+                    </span>
+                  </Link>
                 </h3>
               </div>
               <p>

@@ -4,6 +4,7 @@ import styles from "../../../CSS/Presenter/Views/MyClassesView.module.css";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import { useLogout } from "../../../hooks/useLogout";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const MyClassesView = ({ filterBlock }) => {
   const { user } = useAuthContext();
@@ -150,7 +151,7 @@ const MyClassesView = ({ filterBlock }) => {
     <div className={`${styles.container} ${sidebar.box}`}>
       <div className={styles.headerContainer}>
         <h2 className={forms.h2}>
-          All Classes ({isFetching ? "Loading..." : filteredClasses.length}):
+          My Classes ({isFetching ? "Loading..." : filteredClasses.length}):
         </h2>
         {filterBlock && <p>Filtering by Block #{filterBlock}</p>}
         {!filterBlock && <p>Not Filtering</p>}
@@ -194,10 +195,12 @@ const MyClassesView = ({ filterBlock }) => {
                   <div className={styles.class}>
                     <div className={styles.classHeader}>
                       <h3>
-                        <span className={styles.classColor}>{thisClass.name}</span> by{" "}
-                        <span className={styles.presenterColor}>
-                          {thisClass.presenter_id.firstName} {thisClass.presenterLastName}
-                        </span>
+                        <Link to={`/presenter/${thisClass._id}/edit`} className={styles.className}>
+                          <span className={styles.classColor}>{thisClass.name}</span> by{" "}
+                          <span className={styles.presenterColor}>
+                            {thisClass.presenter_id.firstName} {thisClass.presenterLastName}
+                          </span>
+                        </Link>
                       </h3>
                       <button
                         className={forms.deleteIcon}
