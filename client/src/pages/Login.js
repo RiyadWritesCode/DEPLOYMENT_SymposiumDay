@@ -113,7 +113,7 @@ const Login = () => {
               </span>
             </div>
           </div>
-          {userType === "admin" ? (
+          {userType === "admin" || userType === "presenter" ? (
             <button disabled={isLoading} className={forms.button}>
               {isLoading ? <div className={forms.spinner}></div> : "LOGIN"}
             </button>
