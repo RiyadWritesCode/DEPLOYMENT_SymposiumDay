@@ -113,15 +113,9 @@ const Login = () => {
               </span>
             </div>
           </div>
-          {userType === "admin" || userType === "presenter" ? (
-            <button disabled={isLoading} className={forms.button}>
-              {isLoading ? <div className={forms.spinner}></div> : "LOGIN"}
-            </button>
-          ) : (
-            <button disabled={true} className={forms.button} style={{ backgroundColor: "#f04e4f" }}>
-              DISABLED FOR NOW - CHECK BACK LATER
-            </button>
-          )}
+          <button disabled={isLoading} className={forms.button}>
+            {isLoading ? <div className={forms.spinner}></div> : "LOGIN"}
+          </button>
 
           {error && <div className={forms.error}>{error}</div>}
         </form>
