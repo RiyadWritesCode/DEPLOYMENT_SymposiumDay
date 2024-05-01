@@ -9,17 +9,17 @@ const rateLimit = require("express-rate-limit");
 
 const app = express();
 
-const logDirectory = "/var/log";
-// Ensure the directory exists, create it if it doesn't
-if (!fs.existsSync(logDirectory)) {
-  fs.mkdirSync(logDirectory, { recursive: true });
-}
+// const logDirectory = "/var/log";
+// // Ensure the directory exists, create it if it doesn't
+// if (!fs.existsSync(logDirectory)) {
+//   fs.mkdirSync(logDirectory, { recursive: true });
+// }
 
-const extensiveLogDirectory = "/var/extensiveLog";
-// Ensure the directory exists, create it if it doesn't
-if (!fs.existsSync(extensiveLogDirectory)) {
-  fs.mkdirSync(extensiveLogDirectory, { recursive: true });
-}
+// const extensiveLogDirectory = "/var/extensiveLog";
+// // Ensure the directory exists, create it if it doesn't
+// if (!fs.existsSync(extensiveLogDirectory)) {
+//   fs.mkdirSync(extensiveLogDirectory, { recursive: true });
+// }
 
 // // Set up rotating logs
 // const accessLogStream = rfs.createStream("access.log", {
