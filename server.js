@@ -21,17 +21,17 @@ if (!fs.existsSync(extensiveLogDirectory)) {
   fs.mkdirSync(extensiveLogDirectory, { recursive: true });
 }
 
-// Set up rotating logs
-const accessLogStream = rfs.createStream("access.log", {
-  interval: "1d", // rotate daily
-  path: logDirectory,
-});
+// // Set up rotating logs
+// const accessLogStream = rfs.createStream("access.log", {
+//   interval: "1d", // rotate daily
+//   path: logDirectory,
+// });
 
-// Set up rotating logs
-const accessExtensiveLogStream = rfs.createStream("access.log", {
-  interval: "1d", // rotate daily
-  path: extensiveLogDirectory,
-});
+// // Set up rotating logs
+// const accessExtensiveLogStream = rfs.createStream("access.log", {
+//   interval: "1d", // rotate daily
+//   path: extensiveLogDirectory,
+// });
 
 // Custom Morgan token to log user email
 morgan.token("user-email", function (req) {
@@ -64,7 +64,11 @@ const extensiveLogFormat =
 app.use(morgan(extensiveLogFormat, { stream: accessExtensiveLogStream }));
 
 // Dev logs
-app.use(morgan("dev"));
+app.use(
+  morgan(
+    '[:date[web]] - :remote-addr - :user-email - ":method :url HTTP/:http-version" - :status - :response-time ms - :res[content-length]'
+  )
+);
 
 // Set JSON limit
 app.use(express.json({ limit: "200kb" }));
