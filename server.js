@@ -55,13 +55,13 @@ morgan.token("req-params", function (req) {
   return req.params ? JSON.stringify(req.params) : "no req.params";
 });
 
-const logFormat =
-  '[:date[web]] - :remote-addr - :user-email - ":method :url HTTP/:http-version" - :status - :response-time ms - :res[content-length] - ":referrer" - ":user-agent"';
-app.use(morgan(logFormat, { stream: accessLogStream }));
+// const logFormat =
+//   '[:date[web]] - :remote-addr - :user-email - ":method :url HTTP/:http-version" - :status - :response-time ms - :res[content-length] - ":referrer" - ":user-agent"';
+// app.use(morgan(logFormat, { stream: accessLogStream }));
 
-const extensiveLogFormat =
-  '[:date[web]] - :remote-addr - ":method :url" - :status - :response-time ms - :res[content-length] - :user - :req-headers-authorization - :req-params - :req-body';
-app.use(morgan(extensiveLogFormat, { stream: accessExtensiveLogStream }));
+// const extensiveLogFormat =
+//   '[:date[web]] - :remote-addr - ":method :url" - :status - :response-time ms - :res[content-length] - :user - :req-headers-authorization - :req-params - :req-body';
+// app.use(morgan(extensiveLogFormat, { stream: accessExtensiveLogStream }));
 
 // Dev logs
 app.use(
