@@ -1016,7 +1016,7 @@ const FullSymposiumView = () => {
               {isLoadingAddClassesWithExcel ? (
                 <div className={forms.spinner}></div>
               ) : (
-                "ADD STUDENTS"
+                "ADD CLASSES"
               )}
             </button>
             {addClassesWithExcelError && (
