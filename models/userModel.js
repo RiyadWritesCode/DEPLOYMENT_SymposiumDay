@@ -36,7 +36,7 @@ const userSchema = new Schema(
     gender: {
       type: String,
       required: false,
-      enum: ["male", "female"],
+      enum: ["male", "female", "null"],
       trim: true,
     },
     grade: {
@@ -96,8 +96,8 @@ userSchema.statics.createUser = async function (
     if (!gender || !grade || !section) {
       throw Error("All fields must be filled for students");
     }
-    if (gender !== "male" && gender !== "female") {
-      throw Error("Gender must be either male or female");
+    if (gender !== "male" && gender !== "female" && gender !== "null") {
+      throw Error("Gender must be either male or female or null");
     }
     if (grade > 12 || grade < 1) {
       throw Error("Grade must be from 1-12 for students");

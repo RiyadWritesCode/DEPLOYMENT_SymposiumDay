@@ -38,12 +38,12 @@ const PresenterView = () => {
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
-    setEmail(event.target.value.toLowerCase() + "." + lastName.toLowerCase() + "@ris.ae");
+    setEmail(event.target.value.toLowerCase() + "." + lastName.toLowerCase() + "@outlook.com");
   };
 
   const handleLastNameChange = (event) => {
     setLastName(event.target.value);
-    setEmail(firstName.toLowerCase() + "." + event.target.value.toLowerCase() + "@ris.ae");
+    setEmail(firstName.toLowerCase() + "." + event.target.value.toLowerCase() + "@outlook.com");
   };
 
   const handleEmailChange = (event) => {

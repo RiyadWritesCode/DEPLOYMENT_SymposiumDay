@@ -6,6 +6,12 @@ const joinClass = async (req, res) => {
   const { id, studentId } = req.params;
   const student = await mongoose.model("User").findById(studentId);
 
+  if (thisClass.gender !== student.gender && thisClass.gender !== "all") {
+    return res
+      .status(400)
+      .json({ error: `This class already has the maximum number ${thisClass.gender} of students.` });
+  }
+
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such class" });
   }
@@ -19,11 +25,7 @@ const joinClass = async (req, res) => {
     return res.status(404).json({ error: "No such class" });
   }
 
-  if (thisClass.gender !== student.gender && thisClass.gender !== "all") {
-    return res
-      .status(400)
-      .json({ error: `This class only allows ${thisClass.gender} students to join.` });
-  }
+  
 
   // Check if the student is already in the class
   if (thisClass.students.some((st) => st.student_id === student._id)) {
