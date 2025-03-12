@@ -6,6 +6,11 @@ const joinClass = async (req, res) => {
   const { id, studentId } = req.params;
   const student = await mongoose.model("User").findById(studentId);
 
+  const thisClass = await Class.findById(id);
+  if (!thisClass) {
+    return res.status(404).json({ error: "No such class" });
+  }
+
   if (thisClass.gender !== student.gender && thisClass.gender !== "all") {
     return res
       .status(400)
@@ -20,10 +25,7 @@ const joinClass = async (req, res) => {
     return res.status(400).json({ error: "It is only possible to join classes as a student!" });
   }
 
-  const thisClass = await Class.findById(id);
-  if (!thisClass) {
-    return res.status(404).json({ error: "No such class" });
-  }
+
 
   
 
