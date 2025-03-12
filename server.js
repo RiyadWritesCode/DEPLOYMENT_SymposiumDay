@@ -9,29 +9,29 @@ const rateLimit = require("express-rate-limit");
 
 const app = express();
 
-// const logDirectory = "/var/log";
-// // Ensure the directory exists, create it if it doesn't
-// if (!fs.existsSync(logDirectory)) {
-//   fs.mkdirSync(logDirectory, { recursive: true });
-// }
+const logDirectory = "/var/log";
+// Ensure the directory exists, create it if it doesn't
+if (!fs.existsSync(logDirectory)) {
+  fs.mkdirSync(logDirectory, { recursive: true });
+}
 
-// const extensiveLogDirectory = "/var/extensiveLog";
-// // Ensure the directory exists, create it if it doesn't
-// if (!fs.existsSync(extensiveLogDirectory)) {
-//   fs.mkdirSync(extensiveLogDirectory, { recursive: true });
-// }
+const extensiveLogDirectory = "/var/extensiveLog";
+// Ensure the directory exists, create it if it doesn't
+if (!fs.existsSync(extensiveLogDirectory)) {
+  fs.mkdirSync(extensiveLogDirectory, { recursive: true });
+}
 
-// // Set up rotating logs
-// const accessLogStream = rfs.createStream("access.log", {
-//   interval: "1d", // rotate daily
-//   path: logDirectory,
-// });
+// Set up rotating logs
+const accessLogStream = rfs.createStream("access.log", {
+  interval: "1d", // rotate daily
+  path: logDirectory,
+});
 
-// // Set up rotating logs
-// const accessExtensiveLogStream = rfs.createStream("access.log", {
-//   interval: "1d", // rotate daily
-//   path: extensiveLogDirectory,
-// });
+// Set up rotating logs
+const accessExtensiveLogStream = rfs.createStream("access.log", {
+  interval: "1d", // rotate daily
+  path: extensiveLogDirectory,
+});
 
 // Custom Morgan token to log user email
 morgan.token("user-email", function (req) {
@@ -55,13 +55,13 @@ morgan.token("req-params", function (req) {
   return req.params ? JSON.stringify(req.params) : "no req.params";
 });
 
-// const logFormat =
-//   '[:date[web]] - :remote-addr - :user-email - ":method :url HTTP/:http-version" - :status - :response-time ms - :res[content-length] - ":referrer" - ":user-agent"';
-// app.use(morgan(logFormat, { stream: accessLogStream }));
+const logFormat =
+  '[:date[web]] - :remote-addr - :user-email - ":method :url HTTP/:http-version" - :status - :response-time ms - :res[content-length] - ":referrer" - ":user-agent"';
+app.use(morgan(logFormat, { stream: accessLogStream }));
 
-// const extensiveLogFormat =
-//   '[:date[web]] - :remote-addr - ":method :url" - :status - :response-time ms - :res[content-length] - :user - :req-headers-authorization - :req-params - :req-body';
-// app.use(morgan(extensiveLogFormat, { stream: accessExtensiveLogStream }));
+const extensiveLogFormat =
+  '[:date[web]] - :remote-addr - ":method :url" - :status - :response-time ms - :res[content-length] - :user - :req-headers-authorization - :req-params - :req-body';
+app.use(morgan(extensiveLogFormat, { stream: accessExtensiveLogStream }));
 
 // Dev logs
 app.use(
