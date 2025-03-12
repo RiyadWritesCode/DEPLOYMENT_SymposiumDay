@@ -58,25 +58,25 @@ const Student = () => {
                 onClick={() => handleSetFilterBlock(1)}
                 className={filterBlock === 1 ? sidebar.selected : ""}
               >
-                Block 1: 9:45-10:10
+                Session 1: 9:45-10:10
               </li>
               <li
                 onClick={() => handleSetFilterBlock(2)}
                 className={filterBlock === 2 ? sidebar.selected : ""}
               >
-                Block 2: 10:45-11:10
+                Session 2: 10:45-11:10
               </li>
               <li
                 onClick={() => handleSetFilterBlock(3)}
                 className={filterBlock === 3 ? sidebar.selected : ""}
               >
-                Block 3: 12:10-12:35
+                Session 3: 12:10-12:35
               </li>
               <li
                 onClick={() => handleSetFilterBlock(4)}
                 className={filterBlock === 4 ? sidebar.selected : ""}
               >
-                Block 4: 1:00-1:25
+                Session 4: 1:00-1:25
               </li>
             </ul>
           </div>

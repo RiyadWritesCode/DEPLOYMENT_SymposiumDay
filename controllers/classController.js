@@ -11,10 +11,15 @@ const joinClass = async (req, res) => {
     return res.status(404).json({ error: "No such class" });
   }
 
+  // Check if the class already has the maximum number of students
+  if (thisClass.students.length >= thisClass.maxStudents) {
+    return res.status(400).json({ error: "This class is already full, click the refresh button to see the updated number of students." });
+  }
+
   if (thisClass.gender !== student.gender && thisClass.gender !== "all") {
     return res
       .status(400)
-      .json({ error: `This class already has the maximum number ${thisClass.gender} of students.` });
+      .json({ error: `This class is only for ${thisClass.gender} of students.` });
   }
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -42,10 +47,7 @@ const joinClass = async (req, res) => {
     });
   }
 
-  // Check if the class already has the maximum number of students
-  if (thisClass.students.length >= thisClass.maxStudents) {
-    return res.status(400).json({ error: "Class has already reached maximum capacity" });
-  }
+  
 
   // Check if the student is enrolled in another class in the same block
   const classesInSameBlock = await Class.find({
@@ -59,7 +61,7 @@ const joinClass = async (req, res) => {
   );
   if (classInSameBlock) {
     return res.status(400).json({
-      error: `You are already in another class during block #${thisClass.block}. Leave the other class named '${classInSameBlock.name}' to join this one.`,
+      error: `You are already in another class during session #${thisClass.block}. Leave the other class named '${classInSameBlock.name}' to join this one.`,
     });
   }
 
