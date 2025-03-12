@@ -355,15 +355,22 @@ symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
       symposium.permissions.studentsLeavingClasses
     ) {
       throw new Error(
-        "To fill all available spaces, temporarily disable students from joining or leaving classes."
+        "To fill all available spaces, teporarily disable students from joining or leaving classes."
       );
     }
 
+    // Retrieve detailed class information including students for each class in the symposium
     let classes = await mongoose
       .model("Class")
       .find({ _id: { $in: symposium.classes } })
       .session(session);
 
+    // Sort classes by the number of students descending
+    classes = classes.sort(
+      (a, b) => b.students.length / b.maxStudents - a.students.length / a.maxStudents
+    );
+
+    // Fetch all students part of the symposium
     const allStudents = await mongoose
       .model("User")
       .find({ _id: { $in: symposium.students } })
@@ -372,56 +379,62 @@ symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
     const enrolledStudentsByBlock = new Map();
     const classNameBlocks = new Map();
 
+    // Map students to their enrolled classes by block
     classes.forEach((cls) => {
       cls.students.forEach((student) => {
         const studentIdStr = student.student_id.toString();
-        enrolledStudentsByBlock.set(studentIdStr, enrolledStudentsByBlock.get(studentIdStr) || new Set());
-        enrolledStudentsByBlock.get(studentIdStr).add(cls.block.toString());
+        const block = cls.block.toString();
+        if (!enrolledStudentsByBlock.has(studentIdStr)) {
+          enrolledStudentsByBlock.set(studentIdStr, new Set());
+        }
+        enrolledStudentsByBlock.get(studentIdStr).add(block);
 
-        classNameBlocks.set(studentIdStr, classNameBlocks.get(studentIdStr) || new Set());
+        if (!classNameBlocks.has(studentIdStr)) {
+          classNameBlocks.set(studentIdStr, new Set());
+        }
         classNameBlocks.get(studentIdStr).add(cls.name);
       });
     });
 
     let updatesMade = false;
 
-    for (let student of allStudents) {
-      const studentIdStr = student._id.toString();
-      const studentEnrolledBlocks = enrolledStudentsByBlock.get(studentIdStr) || new Set();
-      const studentEnrolledClassNames = classNameBlocks.get(studentIdStr) || new Set();
+    for (let cls of classes) {
+      if (cls.students.length >= cls.maxStudents) continue; // Skip if class is already full
 
-      // CHANGED: Filter available classes dynamically for each student
-      let availableClasses = classes.filter(
-        (cls) =>
-          cls.students.length < cls.maxStudents &&
-          !studentEnrolledBlocks.has(cls.block.toString()) &&
-          !studentEnrolledClassNames.has(cls.name) &&
-          (cls.gender === "all" || cls.gender === student.gender)
-      );
+      for (let student of allStudents) {
+        const studentIdStr = student._id.toString();
+        const studentEnrolledBlocks = enrolledStudentsByBlock.get(studentIdStr) || new Set();
+        const studentEnrolledClassNames = classNameBlocks.get(studentIdStr) || new Set();
 
-      if (availableClasses.length === 0) continue;
+        // Skip if student is already enrolled in a class for this block
+        if (
+          studentEnrolledBlocks.has(cls.block.toString()) ||
+          studentEnrolledClassNames.has(cls.name)
+        )
+          continue;
 
-      // CHANGED: Sort available classes to always choose the class with the fewest students
-      availableClasses.sort((a, b) => a.students.length - b.students.length);
-
-      let targetClass = availableClasses[0];
-      targetClass.students.push({ student_id: student._id, attendance: null });
-
-      enrolledStudentsByBlock.set(studentIdStr, studentEnrolledBlocks.add(targetClass.block.toString()));
-      classNameBlocks.set(studentIdStr, studentEnrolledClassNames.add(targetClass.name));
-
-      await targetClass.save({ session: session });
-      updatesMade = true;
+        const canJoin = cls.gender === "all" || cls.gender === student.gender;
+        if (canJoin && cls.students.length < cls.maxStudents) {
+          cls.students.push({ student_id: student._id, attendance: null });
+          studentEnrolledBlocks.add(cls.block.toString());
+          studentEnrolledClassNames.add(cls.name);
+          enrolledStudentsByBlock.set(studentIdStr, studentEnrolledBlocks);
+          classNameBlocks.set(studentIdStr, studentEnrolledClassNames);
+          await cls.save({ session: session });
+          updatesMade = true;
+        }
+      }
     }
 
     if (updatesMade) {
       await session.commitTransaction();
       session.endSession();
+      // Optionally, reload the symposium to reflect the updates
       return this.findById(symposium_id).populate("classes");
     } else {
       await session.abortTransaction();
       session.endSession();
-      return symposium;
+      return symposium; // Return the original symposium as no updates were made
     }
   } catch (error) {
     await session.abortTransaction();
@@ -429,6 +442,5 @@ symposiumSchema.statics.fillAvailableSpaces = async function (symposium_id) {
     throw error;
   }
 };
-
 
 module.exports = mongoose.model("Symposium", symposiumSchema);
