@@ -215,8 +215,8 @@ userSchema.statics.createUsers = async function (users, userType) {
       if (!gender || !grade || !section) {
         throw Error(`All fields must be filled for student on row ${rowNum}`);
       }
-      if (gender !== "male" && gender !== "female") {
-        throw Error(`Gender must be either male or female for student on row ${rowNum}`);
+      if (gender !== "male" && gender !== "female" && gender !== "null") {
+        throw Error(`Gender must be either male or female or null for student on row ${rowNum}`);
       }
       if (grade > 12 || grade < 1) {
         throw Error(`Grade must be from 1-12 for students for student on row ${rowNum}`);
