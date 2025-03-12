@@ -74,6 +74,9 @@ const AllClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setSymposiums(json);
+        if (json.length > 0) {
+          setSymposiumFilter(json[0]._id); // Automatically select the first symposium
+        }
       } else if (response.status === 429) {
         alert(json.message); // Set rate limit error message
       } else if (response.status === 401) {
@@ -100,7 +103,7 @@ const AllClassesView = ({ filterBlock }) => {
           All Classes ({isFetching ? "Loading..." : filteredClasses.length}):
         </h2>
 
-        {filterBlock && <p>Filtering by Block #{filterBlock}</p>}
+        {filterBlock && <p>Filtering by Session #{filterBlock}</p>}
         {!filterBlock && <p>Not Filtering</p>}
       </div>
       <button onClick={fetchClasses} disabled={isFetching} className={forms.smallButton}>
@@ -225,7 +228,7 @@ const AllClassesView = ({ filterBlock }) => {
                 )}
               </div>
               <p>
-                <strong>Block:</strong> {thisClass.block} | <strong>Room:</strong> {thisClass.room}
+                <strong>Session:</strong> {thisClass.block} | <strong>Room:</strong> {thisClass.room}
               </p>
               <p>
                 <strong>Short description:</strong>

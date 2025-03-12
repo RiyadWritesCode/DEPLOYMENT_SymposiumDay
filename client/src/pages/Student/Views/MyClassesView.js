@@ -20,7 +20,7 @@ const MyClassesView = ({ filterBlock }) => {
     setSymposiumFilter(event.target.value);
   };
 
-  const classesByBlock = Array.from({ length: 6 }, (_, i) => i + 1).map((blockNumber) => {
+  const classesByBlock = Array.from({ length: 4 }, (_, i) => i + 1).map((blockNumber) => {
     return {
       blockNumber,
       class: myClasses.find((c) => c.block === blockNumber) || null,
@@ -39,6 +39,9 @@ const MyClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setSymposiums(json);
+        if (json.length > 0) {
+          setSymposiumFilter(json[0]._id); // Automatically select the first symposium
+        }
       } else if (response.status === 429) {
         alert(json.message);
       } else if (response.status === 401) {
@@ -115,11 +118,37 @@ const MyClassesView = ({ filterBlock }) => {
         ))}
       </select>
 
+
+      <div>
+              <h2 className={forms.h3} style={{ marginBottom: 12, marginTop: 12 }}>
+                Keynote from 9:10 to 9:35:
+              </h2>
+              
+                  <div className={styles.class}>
+                    <div className={styles.classHeader}>
+                      <h3>
+                        <span className={styles.classColor}>Keynote</span> by{" "}
+                        <span className={styles.presenterColor}>
+                          Charlene Nawar
+                        </span>
+                      </h3>
+                      
+                    </div>
+                    <p>
+                      <strong>Session:</strong> 0 | <strong>Room:</strong>{" "}
+                      Auditorium
+                    </p>
+                    
+                </div>
+              
+            </div>
+
+
       {symposiumFilter
         ? classesByBlock.map(({ blockNumber, class: thisClass }) => (
             <div key={blockNumber}>
               <h2 className={forms.h3} style={{ marginBottom: 12, marginTop: 12 }}>
-                Block #{blockNumber}
+                Session #{blockNumber}
               </h2>
               {isFetching ? (
                 <p>Loading...</p>
@@ -170,7 +199,7 @@ const MyClassesView = ({ filterBlock }) => {
                       </button>
                     </div>
                     <p>
-                      <strong>Block:</strong> {thisClass.block} | <strong>Room:</strong>{" "}
+                      <strong>Session:</strong> {thisClass.block} | <strong>Room:</strong>{" "}
                       {thisClass.room}
                     </p>
                     <p>

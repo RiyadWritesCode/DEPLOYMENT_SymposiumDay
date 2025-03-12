@@ -279,9 +279,7 @@
 }
 
 .ghostButton {
-  position: absolute;
-  top: 0px;
-  right: 15px; /* Position the delete icon to the top right corner of the studentHeader */
+  margin: 0 0 0 12px;
 
   padding: 6px 15px;
   border-radius: 4px;
