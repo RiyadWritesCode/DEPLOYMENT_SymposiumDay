@@ -104,7 +104,7 @@ const joinClass = async (req, res) => {
 
   res.status(200).json(classInfo);
 };
-};
+
 
 const leaveClass = async (req, res) => {
   const { id, studentId } = req.params;
