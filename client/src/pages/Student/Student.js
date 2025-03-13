@@ -39,7 +39,7 @@ const Student = () => {
                     isActive ? `${sidebar.link} ${sidebar.selected}` : sidebar.link
                   }
                 >
-                  My Classes
+                  My Schedule
                 </NavLink>
               </li>
             </ul>
