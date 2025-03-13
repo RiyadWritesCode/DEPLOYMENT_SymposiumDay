@@ -4,10 +4,14 @@ const mongoose = require("mongoose");
 // Join class as a student
 const joinClass = async (req, res) => {
   const { id, studentId } = req.params;
-  const student = await mongoose.model("User").findById(studentId);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such class" });
+  }
+
+  const student = await mongoose.model("User").findById(studentId);
+  if (!student) {
+    return res.status(404).json({ error: "Student not found." });
   }
 
   if (student.userType !== "student") {
@@ -19,77 +23,74 @@ const joinClass = async (req, res) => {
     return res.status(404).json({ error: "No such class" });
   }
 
-  if (thisClass.gender !== student.gender && thisClass.gender !== "all") {
-    return res
-      .status(400)
-      .json({ error: `This class only allows ${thisClass.gender} students to join.` });
-  }
-
-  // Check if the student is already in the class
-  if (thisClass.students.some((st) => st.student_id === student._id)) {
-    return res.status(400).json({ error: "You are already enrolled in this class." });
-  }
-
   const symposium = await mongoose.model("Symposium").findById(thisClass.symposium_id);
-
   if (!symposium.permissions.studentsJoiningClasses) {
-    return res.status(404).json({
+    return res.status(403).json({
       error: "The admin has currently locked students from joining classes in this symposium.",
     });
   }
 
-  // Check if the class already has the maximum number of students
-  if (thisClass.students.length >= thisClass.maxStudents) {
-    return res.status(400).json({ error: "Class has already reached maximum capacity" });
-  }
-
-  // Check if the student is enrolled in another class in the same block
-  const classesInSameBlock = await Class.find({
+  // Check if student is in another class in the same block
+  const classesInSameBlock = await Class.findOne({
     block: thisClass.block,
-    _id: { $ne: id }, // Exclude the current class
     symposium_id: thisClass.symposium_id,
+    "students.student_id": student._id,
+    _id: { $ne: id },
   }).lean();
 
-  classInSameBlock = classesInSameBlock.find((classInBlock) =>
-    classInBlock.students.some((st) => st.student_id.toString() === student._id.toString())
-  );
-  if (classInSameBlock) {
+  if (classesInSameBlock) {
     return res.status(400).json({
-      error: `You are already in another class during block #${thisClass.block}. Leave the other class named '${classInSameBlock.name}' to join this one.`,
+      error: `You are already in another class during block #${thisClass.block}. Leave the other class named '${classesInSameBlock.name}' to join this one.`,
     });
   }
 
-  const classesWithSameName = await Class.find({
+  // Check if already enrolled in a class with the same name in this symposium
+  const classesWithSameName = await Class.findOne({
     name: thisClass.name,
-    "students.student_id": student._id,
     symposium_id: thisClass.symposium_id,
-  });
+    "students.student_id": student._id,
+  }).lean();
 
-  if (classesWithSameName.length > 0) {
+  if (classesWithSameName) {
     return res.status(400).json({
       error: `You are already enrolled in a class with the same name. You cannot join two of the same classes twice in a day.`,
     });
   }
 
+  // Atomic operation to prevent race condition
   const updatedClassInstance = await Class.findOneAndUpdate(
-    { _id: id },
-    { $push: { students: { student_id: student._id, attendance: null } } },
+    {
+      _id: id,
+      "students.student_id": { $ne: student._id }, // avoid duplicates
+      $expr: { $lt: [{ $size: "$students" }, "$maxStudents"] }, // class not full
+      gender: { $in: [student.gender, "all"] }, // gender validation
+    },
+    {
+      $push: { students: { student_id: student._id, attendance: null } },
+    },
     { new: true }
-  ).populate("presenter_id", "firstName lastName"); // Ensure presenter_id is populated
+  ).populate("presenter_id", "firstName lastName");
 
   if (!updatedClassInstance) {
-    return res.status(404).json({ error: `Operation failed: failed to join class` });
+    // Class full, gender mismatch, or already enrolled handled here
+    if (thisClass.students.some(st => st.student_id.equals(student._id))) {
+      return res.status(400).json({ error: "You are already enrolled in this class." });
+    } else if (thisClass.students.length >= thisClass.maxStudents) {
+      return res.status(400).json({ error: "Class has already reached maximum capacity" });
+    } else if (thisClass.gender !== "all" && thisClass.gender !== student.gender) {
+      return res.status(400).json({ error: `This class only allows ${thisClass.gender} students to join.` });
+    } else {
+      return res.status(400).json({ error: "Failed to join class due to unknown reason." });
+    }
   }
 
-  // Convert the Mongoose document to a JavaScript object
   let classInfo = updatedClassInstance.toObject();
-
-  // Append presenter information directly to the JavaScript object
   classInfo.presenterFirstName = updatedClassInstance.presenter_id.firstName;
   classInfo.presenterLastName = updatedClassInstance.presenter_id.lastName;
 
   res.status(200).json(classInfo);
 };
+
 
 const leaveClass = async (req, res) => {
   const { id, studentId } = req.params;
