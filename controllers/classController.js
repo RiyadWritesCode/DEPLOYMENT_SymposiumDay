@@ -6,22 +6,6 @@ const joinClass = async (req, res) => {
   const { id, studentId } = req.params;
   const student = await mongoose.model("User").findById(studentId);
 
-  const thisClass = await Class.findById(id);
-  if (!thisClass) {
-    return res.status(404).json({ error: "No such class" });
-  }
-
-  // Check if the class already has the maximum number of students
-  if (thisClass.students.length >= thisClass.maxStudents) {
-    return res.status(400).json({ error: "This class is already full, click the refresh button to see the updated number of students." });
-  }
-
-  if (thisClass.gender !== student.gender && thisClass.gender !== "all") {
-    return res
-      .status(400)
-      .json({ error: `This class is only for ${thisClass.gender} of students.` });
-  }
-
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such class" });
   }
@@ -30,9 +14,16 @@ const joinClass = async (req, res) => {
     return res.status(400).json({ error: "It is only possible to join classes as a student!" });
   }
 
+  const thisClass = await Class.findById(id);
+  if (!thisClass) {
+    return res.status(404).json({ error: "No such class" });
+  }
 
-
-  
+  if (thisClass.gender !== student.gender && thisClass.gender !== "all") {
+    return res
+      .status(400)
+      .json({ error: `This class only allows ${thisClass.gender} students to join.` });
+  }
 
   // Check if the student is already in the class
   if (thisClass.students.some((st) => st.student_id === student._id)) {
@@ -47,7 +38,10 @@ const joinClass = async (req, res) => {
     });
   }
 
-  
+  // Check if the class already has the maximum number of students
+  if (thisClass.students.length >= thisClass.maxStudents) {
+    return res.status(400).json({ error: "Class has already reached maximum capacity" });
+  }
 
   // Check if the student is enrolled in another class in the same block
   const classesInSameBlock = await Class.find({
@@ -61,7 +55,7 @@ const joinClass = async (req, res) => {
   );
   if (classInSameBlock) {
     return res.status(400).json({
-      error: `You are already in another class during session #${thisClass.block}. Leave the other class named '${classInSameBlock.name}' to join this one.`,
+      error: `You are already in another class during block #${thisClass.block}. Leave the other class named '${classInSameBlock.name}' to join this one.`,
     });
   }
 
@@ -77,33 +71,24 @@ const joinClass = async (req, res) => {
     });
   }
 
-  const updatedClass = await Class.findOneAndUpdate(
-    {
-      _id: id,
-      // Confirm the class is not full
-      $expr: { $lt: [{ $size: "$students" }, classToJoin.maxStudents] },
-      // Ensure student isn't already enrolled
-      "students.student_id": { $ne: student._id },
-    },
-    {
-      $push: { students: { student_id: student._id, attendance: null } },
-    },
+  const updatedClassInstance = await Class.findOneAndUpdate(
+    { _id: id },
+    { $push: { students: { student_id: student._id, attendance: null } } },
     { new: true }
-  ).populate("presenter_id", "firstName lastName");
+  ).populate("presenter_id", "firstName lastName"); // Ensure presenter_id is populated
 
-  if (!updatedClass) {
-    return res.status(400).json({
-      error:
-        "Unable to join class. It may be full, or you might already be enrolled.",
-    });
+  if (!updatedClassInstance) {
+    return res.status(404).json({ error: `Operation failed: failed to join class` });
   }
 
-  let classInfo = updatedClass.toObject();
-  classInfo.presenterFirstName = updatedClass.presenter_id.firstName;
-  classInfo.presenterLastName = updatedClass.presenter_id.lastName;
+  // Convert the Mongoose document to a JavaScript object
+  let classInfo = updatedClassInstance.toObject();
+
+  // Append presenter information directly to the JavaScript object
+  classInfo.presenterFirstName = updatedClassInstance.presenter_id.firstName;
+  classInfo.presenterLastName = updatedClassInstance.presenter_id.lastName;
 
   res.status(200).json(classInfo);
-};
 };
 
 const leaveClass = async (req, res) => {
