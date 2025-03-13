@@ -77,24 +77,33 @@ const joinClass = async (req, res) => {
     });
   }
 
-  const updatedClassInstance = await Class.findOneAndUpdate(
-    { _id: id },
-    { $push: { students: { student_id: student._id, attendance: null } } },
+  const updatedClass = await Class.findOneAndUpdate(
+    {
+      _id: id,
+      // Confirm the class is not full
+      $expr: { $lt: [{ $size: "$students" }, classToJoin.maxStudents] },
+      // Ensure student isn't already enrolled
+      "students.student_id": { $ne: student._id },
+    },
+    {
+      $push: { students: { student_id: student._id, attendance: null } },
+    },
     { new: true }
-  ).populate("presenter_id", "firstName lastName"); // Ensure presenter_id is populated
+  ).populate("presenter_id", "firstName lastName");
 
-  if (!updatedClassInstance) {
-    return res.status(404).json({ error: `Operation failed: failed to join class` });
+  if (!updatedClass) {
+    return res.status(400).json({
+      error:
+        "Unable to join class. It may be full, or you might already be enrolled.",
+    });
   }
 
-  // Convert the Mongoose document to a JavaScript object
-  let classInfo = updatedClassInstance.toObject();
-
-  // Append presenter information directly to the JavaScript object
-  classInfo.presenterFirstName = updatedClassInstance.presenter_id.firstName;
-  classInfo.presenterLastName = updatedClassInstance.presenter_id.lastName;
+  let classInfo = updatedClass.toObject();
+  classInfo.presenterFirstName = updatedClass.presenter_id.firstName;
+  classInfo.presenterLastName = updatedClass.presenter_id.lastName;
 
   res.status(200).json(classInfo);
+};
 };
 
 const leaveClass = async (req, res) => {
