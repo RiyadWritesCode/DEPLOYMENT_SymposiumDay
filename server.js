@@ -75,12 +75,12 @@ app.use(express.json({ limit: "200kb" }));
 
 // app.set("trust proxy", true);
 const userLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 500, // limit each IP to 500 requests per windowMs
+  windowMs: 2 * 60 * 1000, // 5 minutes
+  max: 750, // limit each IP to 500 requests per windowMs
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
-    message: "Too many requests from this IP, please try again after 5 minutes",
+    message: "Too many requests from this IP, please try again after 2 minutes",
     code: 429, // Optional: you might want to include a specific error code
   },
 });
