@@ -90,7 +90,7 @@ const MyClassesView = ({ filterBlock }) => {
       if (response.ok) {
         setSymposiums(json);
         if (json.length > 0) {
-          (json[0]._id); // Automatically select the first symposium
+          setSymposiumFilter(json[0]._id); // Automatically select the first symposium
         }
       }  else if (response.status === 429) {
         alert(json.message);
