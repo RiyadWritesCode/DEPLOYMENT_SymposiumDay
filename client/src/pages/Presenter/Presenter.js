@@ -48,49 +48,37 @@ const Presenter = () => {
           </div>
           <div className={`${sidebar.box} ${styles.bottomSidebar}`}>
             <ul className={sidebar.sidebar}>
-              <p>Filter by Class Block:</p>
-
+              <p>Filter by Class Session:</p>
+              
               <li
                 onClick={() => handleSetFilterBlock("")}
                 className={filterBlock === "" ? sidebar.selected : ""}
               >
-                All Blocks
+                All Sessions
               </li>
               <li
                 onClick={() => handleSetFilterBlock(1)}
                 className={filterBlock === 1 ? sidebar.selected : ""}
               >
-                Block 1: 8:15-8:45
+                Session 1: 9:45-10:10
               </li>
               <li
                 onClick={() => handleSetFilterBlock(2)}
                 className={filterBlock === 2 ? sidebar.selected : ""}
               >
-                Block 2: 8:50-9:20
+                Session 2: 10:45-11:10
               </li>
               <li
                 onClick={() => handleSetFilterBlock(3)}
                 className={filterBlock === 3 ? sidebar.selected : ""}
               >
-                Block 3: 10:20-10:50
+                Session 3: 12:10-12:35
               </li>
               <li
                 onClick={() => handleSetFilterBlock(4)}
                 className={filterBlock === 4 ? sidebar.selected : ""}
               >
-                Block 4: 11:00-11:30
-              </li>
-              <li
-                onClick={() => handleSetFilterBlock(5)}
-                className={filterBlock === 5 ? sidebar.selected : ""}
-              >
-                Block 5: 11:40-12:10
-              </li>
-              <li
-                onClick={() => handleSetFilterBlock(6)}
-                className={filterBlock === 6 ? sidebar.selected : ""}
-              >
-                Block 6: 12:20-12:50
+                Session 4: 1:00-1:25
               </li>
             </ul>
           </div>

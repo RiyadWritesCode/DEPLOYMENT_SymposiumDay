@@ -89,7 +89,10 @@ const MyClassesView = ({ filterBlock }) => {
 
       if (response.ok) {
         setSymposiums(json);
-      } else if (response.status === 429) {
+        if (json.length > 0) {
+          (json[0]._id); // Automatically select the first symposium
+        }
+      }  else if (response.status === 429) {
         alert(json.message);
       } else if (response.status === 401) {
         logout();
@@ -202,7 +205,7 @@ const MyClassesView = ({ filterBlock }) => {
                           </span>
                         </Link>
                       </h3>
-                      <button
+                      {/* <button
                         className={forms.deleteIcon}
                         onClick={async () => {
                           const isConfirmed = window.confirm(
@@ -238,7 +241,7 @@ const MyClassesView = ({ filterBlock }) => {
                         ) : (
                           <span className="material-symbols-outlined">delete</span>
                         )}{" "}
-                      </button>
+                      </button> */}
                     </div>
                     <p>
                       <strong>Block:</strong> {thisClass.block} | <strong>Room:</strong>{" "}
