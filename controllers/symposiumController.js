@@ -527,7 +527,7 @@ const sendScheduleToStudents = async (req, res) => {
       <body>
         <div class="container">
           <h1>Hello ${student.firstName}!</h1>
-          <h2>Here is your schedule for '${symposium.name}' tomorrow on Wednesday, March 18th:</h2>
+          <h2>Here is your current schedule for '${symposium.name}' tomorrow on Wednesday, March 19th:</h2>
           <hr>
       `;
 
@@ -557,7 +557,7 @@ const sendScheduleToStudents = async (req, res) => {
 
       emailBody += `
           <hr>
-          <p>To see your schedule online, visit <a href="https://symposiumday.com/student/my-classes" target="_blank">https://symposiumday.com/student/my-classes</a>.</p>
+          <p>To see your schedule online or change your classes, visit <a href="https://symposiumday.com/student/my-classes" target="_blank">https://symposiumday.com/student/my-classes</a>.</p>
           <h2>Here is your login information if you forgot!</h2>
           <p><strong>Email:</strong> ${student.email}</p>
           <p><strong>Password:</strong> ${decrypt(student.password)}</p>
