@@ -475,56 +475,116 @@ const sendScheduleToPresenters = async (req, res) => {
 
 const sendScheduleToStudents = async (req, res) => {
   try {
-    const symposium = await Symposium.findById(req.params.id);
-    const studentPromises = symposium.students.map((student_id) =>
-      mongoose.model("User").findById(student_id).lean()
-    );
-    const students = await Promise.all(studentPromises);
-
-    for (const student of students) {
-      await transporter.sendMail(
-        {
-          from: "info@symposiumday.com",
-          to: student.email,
-          subject: `Symposium on ${symposium.date}`,
-          html: `
-            <h1>Hello ${student.firstName}!</h1>
-            <h2>You are scheduled for a symposium called '${symposium.name}' on ${
-            symposium.date
-          }.</h2>
-            <p>To see your schedule go to <a href="https://symposiumday.com/student/my-classes" target="_blank">symposiumday.com/student/my-classes</a>.</p>
-            <br />
-            <hr/ >
-            <br />
-            <h2>If you are not logged in or forgot your account credentials, here they are:</h2>
-            <p><strong>Email:</strong> ${student.email}</p>
-            <p><strong>Password:</strong> ${decrypt(student.password)}</p>
-            <br />
-            <hr/ >
-            <br />
-            <h1>Common Questions:</h1>
-            <h2>What is this?</h2>
-            <p><a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> is a website used by raha school to have days where students can choose what classes they will have.</p>
-            <h2>How to use SymposiumDay.com?</h2>
-            <p>To learn how to use <a href='https://symposiumday.com' target='_blank'>SymposiumDay.com</a> as a student watch this <a href='https://www.youtube.com/watch?v=EOwiGTCKpaI' target='_blank'>youtube video</a>.</p>
-            <h2>Other Questions?</h2>
-            <p>If you have any other questions, suggestions, or issues with <a href="https://symposiumday.com" target="_blank">SymposiumDay.com</a> feel free to message Riyad Rzayev on teams or email riyad.rzayev@ris.ae.</p>
-            `,
+    const symposium = await Symposium.findById(req.params.id)
+      .populate({
+        path: "students",
+        select: "firstName lastName email password",
+      })
+      .populate({
+        path: "classes",
+        populate: {
+          path: "presenter_id",
+          select: "firstName lastName",
         },
-        function (error, info) {
-          if (error) {
-            return console.log(error);
-            throw Error("Failed to send one or more emails.");
-          }
-          console.log("Message sent: " + info.response);
-        }
-      );
+      });
+
+    if (!symposium) {
+      return res.status(404).json({ error: "Symposium not found" });
     }
-    res.status(200).json({ message: "Emails sent successfully!" });
+
+    // Define time slots for each session
+    const sessionTimes = {
+      1: "9:45 - 10:10 AM",
+      2: "10:45 - 11:10 AM",
+      3: "12:10 - 12:35 PM",
+      4: "1:00 - 1:25 PM",
+    };
+
+    for (const student of symposium.students) {
+      // Find classes the student is enrolled in
+      const studentClasses = symposium.classes.filter((c) =>
+        c.students.some((s) => s.student_id.equals(student._id))
+      );
+
+      // Construct email body
+      let emailBody = `
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 20px; }
+          h1, h2 { color: #2c3e50; }
+          .container { max-width: 600px; background: white; padding: 20px; margin: auto; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1); }
+          .class-box { padding: 10px; border-left: 5px solid #3498db; margin-bottom: 15px; background: #ecf0f1; border-radius: 5px; }
+          .keynote { border-left-color: #e74c3c; }
+          .footer { margin-top: 20px; font-size: 12px; color: #7f8c8d; }
+          a { color: #2980b9; text-decoration: none; }
+          h1 {font-size: 24px;}
+          h2 {font-size: 18px;}
+          h3 {font-size: 16px;}
+          p {font-size: 14px;}
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Hello ${student.firstName}!</h1>
+          <h2>Here is your schedule for '${symposium.name}' tomorrow on Wednesday, March 18th:</h2>
+          <hr>
+      `;
+
+      // Add Keynote (if any)
+      emailBody += `
+        <div class="class-box keynote">
+          <h3>Keynote: Charlene Nawar</h3>
+          <p><strong>Time:</strong> 9:10 - 9:35 AM</p>
+          <p><strong>Room:</strong> Auditorium</p>
+        </div>
+      `;
+
+      // Add Student's Classes with Correct Times
+      studentClasses.forEach((thisClass) => {
+        const sessionTime = sessionTimes[thisClass.block] || "Time Unavailable";
+
+        emailBody += `
+        <div class="class-box">
+          <h3>${thisClass.name} by ${thisClass.presenter_id.firstName} ${thisClass.presenter_id.lastName}</h3>
+          <p><strong>Session:</strong> ${thisClass.block}</p>
+          <p><strong>Time:</strong> ${sessionTime}</p>
+          <p><strong>Room:</strong> ${thisClass.room}</p>
+          <p><strong>Description:</strong> ${thisClass.shortDescription}</p>
+        </div>
+        `;
+      });
+
+      emailBody += `
+          <hr>
+          <p>To see your schedule online, visit <a href="https://symposiumday.com/student/my-classes" target="_blank">https://symposiumday.com/student/my-classes</a>.</p>
+          <h2>Here is your login information if you forgot!</h2>
+          <p><strong>Email:</strong> ${student.email}</p>
+          <p><strong>Password:</strong> ${decrypt(student.password)}</p>
+          <p class="footer">If you have any questions, contact Mr. Ashley.</p>
+        </div>
+      </body>
+      </html>
+      `;
+
+      // Send the email
+      await transporter.sendMail({
+        from: "info@symposiumday.com",
+        to: student.email,
+        subject: `Your Symposium Schedule - ${symposium.date}`,
+        html: emailBody,
+      });
+
+      console.log(`Schedule sent to: ${student.email}`);
+    }
+
+    res.status(200).json({ message: "Schedules sent successfully!" });
   } catch (error) {
+    console.error("Error sending schedules:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 module.exports = {
   createSymposium,
   addClassesToSymposium,
