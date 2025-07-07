@@ -1,0 +1,1 @@
+This is a self-scheduling program I wrote to allow my school to organise a SymposiumDay where teachers could schedule classes which students could sign up for. I posted 3 videos demonstrating the app on a youtube channel https://www.youtube.com/@SymposiumDay.
